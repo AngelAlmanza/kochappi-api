@@ -1,5 +1,7 @@
 # Project Structure
 
+This is a **backend API server** written in Go. The structure follows Hexagonal Architecture (Ports & Adapters) to keep the business logic independent from HTTP, database, and other infrastructure concerns.
+
 ```
 kochappi-api/
 ├── cmd/

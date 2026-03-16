@@ -1,8 +1,8 @@
-# Kochappi Backend Architecture
+# Kochappi Backend API Architecture
 
 **Stack:** Go, PostgreSQL, GORM, JWT | **Pattern:** Hexagonal Architecture
 
-This directory contains the architecture documentation split by topic for easier navigation.
+This directory contains the backend API architecture documentation split by topic for easier navigation. The API serves both the Android mobile client and potential web clients with REST endpoints.
 
 ---
 

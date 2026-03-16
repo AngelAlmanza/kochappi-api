@@ -2,7 +2,7 @@
 
 ## What is Kochappi?
 
-A backend API for personal trainers to manage clients, routines, and training sessions. The goal is to build a **maintainable, scalable, and testable** system that can grow from a single-trainer MVP to a multi-tenant SaaS platform.
+A **RESTful backend API** built in Go that powers the Kochappi platform. The API enables personal trainers to manage clients, routines, and training sessions through HTTP endpoints. It serves the Kochappi Android mobile app as the primary client, but is designed to be client-agnostic. The goal is to build a **maintainable, scalable, and testable** system that can grow from a single-trainer MVP to a multi-tenant SaaS platform.
 
 ## Core Principles
 
@@ -55,21 +55,25 @@ We use **Hexagonal Architecture** so that the business core never depends on inf
 - **Zero external dependencies** — pure Go, no frameworks
 - Answers the question: *"what does this system do?"*
 - Examples: `Trainer`, `Client`, `Routine`, `Exercise`
+- Independent of HTTP, databases, or any external framework
 
-### 2. Application Layer (Use Cases)
+### 2. Application Layer (Use Cases / Business Logic Orchestration)
 - Orchestrates domain logic to fulfill specific business flows
-- May only depend on the domain layer
+- May only depend on the domain layer and ports
 - Examples: `CreateRoutineUseCase`, `RegisterTrainingSessionUseCase`
+- Each use case represents one piece of business functionality
 
 ### 3. Port Layer (Interfaces / Contracts)
-- Defines how layers communicate without knowing about each other
-- **Inbound Ports**: how external actors call into the system (HTTP → Application)
-- **Outbound Ports**: how the system calls external systems (Application → Database)
+- Defines how layers communicate without knowing about each other's implementations
+- **Inbound Ports**: contracts for how external actors (HTTP clients, CLI) call into the system
+- **Outbound Ports**: contracts for how the system calls external systems (database, file storage, email)
+- Enables dependency inversion and easy testing
 
 ### 4. Adapter Layer (Framework Integration)
 - Implements the ports — the only place where frameworks appear
-- **Primary (Inbound)**: REST handlers, middleware, routing
-- **Secondary (Outbound)**: PostgreSQL/GORM repositories, JWT provider, file storage
+- **Primary (Inbound) Adapters**: REST handlers, HTTP middleware, routing, request parsing
+- **Secondary (Outbound) Adapters**: PostgreSQL/GORM repositories, JWT provider, file storage clients
+- Translates between HTTP/database representations and domain objects
 
 ---
 

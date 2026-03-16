@@ -1,5 +1,7 @@
 # Testing Strategy
 
+This backend API follows a test pyramid approach to ensure quality while keeping test execution fast. Each test level focuses on a different concern: domain logic, repository implementations, and HTTP endpoints.
+
 ---
 
 ## Test Pyramid
