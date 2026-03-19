@@ -50,6 +50,8 @@ func mapDomainErrorToHTTPStatus(err domainerror.DomainError) int {
 		return http.StatusUnauthorized
 	case "UNAUTHORIZED":
 		return http.StatusForbidden
+	case "EXERCISE_NOT_FOUND":
+		return http.StatusNotFound
 	default:
 		return http.StatusInternalServerError
 	}

@@ -95,3 +95,19 @@ func (e *UnauthorizedError) Code() string {
 func (e *UnauthorizedError) IsUserError() bool {
 	return true
 }
+
+type ExerciseNotFoundError struct {
+	ID int
+}
+
+func (e *ExerciseNotFoundError) Error() string {
+	return fmt.Sprintf("exercise %d not found", e.ID)
+}
+
+func (e *ExerciseNotFoundError) Code() string {
+	return "EXERCISE_NOT_FOUND"
+}
+
+func (e *ExerciseNotFoundError) IsUserError() bool {
+	return true
+}

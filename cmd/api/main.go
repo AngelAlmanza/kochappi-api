@@ -10,6 +10,7 @@ import (
 	"kochappi/internal/adapter/http/handler"
 	"kochappi/internal/adapter/persistence/postgres"
 	"kochappi/internal/application/service/auth"
+	"kochappi/internal/application/service/exercises"
 	"kochappi/internal/shared/logger"
 
 	_ "kochappi/docs"
@@ -51,6 +52,7 @@ func main() {
 	// Repositories
 	userRepo := postgres.NewPostgresUserRepository(db)
 	refreshTokenRepo := postgres.NewPostgresRefreshTokenRepository(db)
+	exerciseRepo := postgres.NewPostgresExerciseRepository(db)
 
 	// Use Cases
 	registerUseCase := auth.NewRegisterUseCase(userRepo, passwordHasher, jwtProvider, refreshTokenRepo)
@@ -58,6 +60,12 @@ func main() {
 	forgotPasswordUseCase := auth.NewForgotPasswordUseCase(userRepo, otpService, cfg.OTPExpiryMinutes)
 	resetPasswordUseCase := auth.NewResetPasswordUseCase(userRepo, passwordHasher, refreshTokenRepo)
 	refreshTokenUseCase := auth.NewRefreshTokenUseCase(userRepo, jwtProvider, refreshTokenRepo)
+
+	getExercisesUseCase := exercises.NewGetExercisesUseCase(exerciseRepo)
+	getExerciseByIDUseCase := exercises.NewGetExerciseByIDUseCase(exerciseRepo)
+	createExerciseUseCase := exercises.NewCreateExerciseUseCase(exerciseRepo)
+	updateExerciseUseCase := exercises.NewUpdateExerciseUseCase(exerciseRepo)
+	deleteExerciseUseCase := exercises.NewDeleteExerciseUseCase(exerciseRepo)
 
 	// Handlers
 	authHandler := handler.NewAuthHandler(
@@ -67,9 +75,16 @@ func main() {
 		resetPasswordUseCase,
 		refreshTokenUseCase,
 	)
+	exerciseHandler := handler.NewExerciseHandler(
+		getExercisesUseCase,
+		getExerciseByIDUseCase,
+		createExerciseUseCase,
+		updateExerciseUseCase,
+		deleteExerciseUseCase,
+	)
 
 	// Router
-	router := httpAdapter.NewRouter(authHandler, jwtProvider)
+	router := httpAdapter.NewRouter(authHandler, exerciseHandler, jwtProvider)
 
 	addr := fmt.Sprintf(":%s", cfg.Port)
 	logger.Info.Printf("Server starting on %s (env: %s)", addr, cfg.Env)

@@ -12,6 +12,7 @@ import (
 
 func NewRouter(
 	authHandler *handler.AuthHandler,
+	exerciseHandler *handler.ExerciseHandler,
 	tokenProvider port.TokenProvider,
 ) *gin.Engine {
 	router := gin.Default()
@@ -37,6 +38,15 @@ func NewRouter(
 		protected.Use(middleware.AuthMiddleware(tokenProvider))
 		{
 			protected.GET("/auth/me", authHandler.Me)
+
+			exercisesGroup := protected.Group("/exercises")
+			{
+				exercisesGroup.GET("", exerciseHandler.GetExercises)
+				exercisesGroup.GET("/:id", exerciseHandler.GetExerciseByID)
+				exercisesGroup.POST("", exerciseHandler.CreateExercise)
+				exercisesGroup.PUT("/:id", exerciseHandler.UpdateExercise)
+				exercisesGroup.DELETE("/:id", exerciseHandler.DeleteExercise)
+			}
 		}
 	}
 

@@ -5,6 +5,8 @@ import (
 	"kochappi/internal/domain/entity"
 )
 
+// Users and auth
+
 type UserRepository interface {
 	Create(ctx context.Context, user *entity.User) error
 	GetByID(ctx context.Context, id int) (*entity.User, error)
@@ -34,4 +36,14 @@ type TokenProvider interface {
 type OTPService interface {
 	GenerateCode() string
 	Send(ctx context.Context, email string, code string) error
+}
+
+// Exercises
+
+type ExerciseRepository interface {
+	GetAll(ctx context.Context) ([]entity.Exercise, error)
+	GetByID(ctx context.Context, id int) (*entity.Exercise, error)
+	Create(ctx context.Context, exercise *entity.Exercise) error
+	Update(ctx context.Context, exercise *entity.Exercise) error
+	Delete(ctx context.Context, id int) error
 }

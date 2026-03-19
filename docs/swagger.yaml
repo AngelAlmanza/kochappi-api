@@ -11,6 +11,17 @@ definitions:
       user:
         $ref: '#/definitions/dto.UserResponse'
     type: object
+  dto.CreateExerciseRequest:
+    properties:
+      name:
+        example: Squat
+        type: string
+      videoUrl:
+        example: https://example.com/squat.mp4
+        type: string
+    required:
+    - name
+    type: object
   dto.ErrorResponse:
     properties:
       code:
@@ -18,6 +29,18 @@ definitions:
         type: string
       error:
         example: descriptive error message
+        type: string
+    type: object
+  dto.ExerciseResponse:
+    properties:
+      id:
+        example: 1
+        type: integer
+      name:
+        example: Squat
+        type: string
+      videoUrl:
+        example: https://example.com/squat.mp4
         type: string
     type: object
   dto.ForgotPasswordRequest:
@@ -114,6 +137,17 @@ definitions:
       refresh_token:
         example: eyJhbGciOiJIUzI1NiIs...
         type: string
+    type: object
+  dto.UpdateExerciseRequest:
+    properties:
+      name:
+        example: Squat
+        type: string
+      videoUrl:
+        example: https://example.com/squat.mp4
+        type: string
+    required:
+    - name
     type: object
   dto.UserResponse:
     properties:
@@ -303,6 +337,137 @@ paths:
       summary: Reset password
       tags:
       - Auth
+  /exercises:
+    get:
+      description: Returns a list of all exercises
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.ExerciseResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List all exercises
+      tags:
+      - Exercises
+    post:
+      consumes:
+      - application/json
+      description: Creates a new exercise and returns it
+      parameters:
+      - description: Exercise data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateExerciseRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.ExerciseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create a new exercise
+      tags:
+      - Exercises
+  /exercises/{id}:
+    delete:
+      description: Deletes an exercise by its ID
+      parameters:
+      - description: Exercise ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete an exercise
+      tags:
+      - Exercises
+    get:
+      description: Returns a single exercise by its ID
+      parameters:
+      - description: Exercise ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ExerciseResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get an exercise by ID
+      tags:
+      - Exercises
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing exercise by its ID
+      parameters:
+      - description: Exercise ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Exercise data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateExerciseRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ExerciseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update an exercise
+      tags:
+      - Exercises
 securityDefinitions:
   BearerAuth:
     description: 'Enter your bearer token in the format: Bearer {token}'
