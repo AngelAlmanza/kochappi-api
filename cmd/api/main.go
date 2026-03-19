@@ -12,6 +12,7 @@ import (
 	"kochappi/internal/application/service/auth"
 	"kochappi/internal/application/service/customers"
 	"kochappi/internal/application/service/exercises"
+	"kochappi/internal/application/service/templates"
 	"kochappi/internal/shared/logger"
 
 	_ "kochappi/docs"
@@ -55,6 +56,8 @@ func main() {
 	refreshTokenRepo := postgres.NewPostgresRefreshTokenRepository(db)
 	exerciseRepo := postgres.NewPostgresExerciseRepository(db)
 	customerRepo := postgres.NewCustomerRepository(db)
+	templateRepo := postgres.NewPostgresTemplateRepository(db)
+	templateDetailRepo := postgres.NewPostgresTemplateDetailRepository(db)
 
 	// Use Cases
 	registerUseCase := auth.NewRegisterUseCase(userRepo, passwordHasher, jwtProvider, refreshTokenRepo)
@@ -68,6 +71,14 @@ func main() {
 	createExerciseUseCase := exercises.NewCreateExerciseUseCase(exerciseRepo)
 	updateExerciseUseCase := exercises.NewUpdateExerciseUseCase(exerciseRepo)
 	deleteExerciseUseCase := exercises.NewDeleteExerciseUseCase(exerciseRepo)
+
+	getTemplatesUseCase := templates.NewGetTemplatesUseCase(templateRepo)
+	getTemplateByIDUseCase := templates.NewGetTemplateByIDUseCase(templateRepo, templateDetailRepo)
+	createTemplateUseCase := templates.NewCreateTemplateUseCase(templateRepo, templateDetailRepo, exerciseRepo)
+	updateTemplateUseCase := templates.NewUpdateTemplateUseCase(templateRepo)
+	deleteTemplateUseCase := templates.NewDeleteTemplateUseCase(templateRepo)
+	addTemplateDetailUseCase := templates.NewAddTemplateDetailUseCase(templateRepo, templateDetailRepo, exerciseRepo)
+	removeTemplateDetailUseCase := templates.NewRemoveTemplateDetailUseCase(templateDetailRepo)
 
 	getCustomersUseCase := customers.NewGetCustomersUseCase(customerRepo)
 	getCustomerByIDUseCase := customers.NewGetCustomerByIDUseCase(customerRepo)
@@ -97,9 +108,18 @@ func main() {
 		updateCustomerUseCase,
 		deleteCustomerUseCase,
 	)
+	templateHandler := handler.NewTemplateHandler(
+		getTemplatesUseCase,
+		getTemplateByIDUseCase,
+		createTemplateUseCase,
+		updateTemplateUseCase,
+		deleteTemplateUseCase,
+		addTemplateDetailUseCase,
+		removeTemplateDetailUseCase,
+	)
 
 	// Router
-	router := httpAdapter.NewRouter(authHandler, exerciseHandler, customerHandler, jwtProvider)
+	router := httpAdapter.NewRouter(authHandler, exerciseHandler, customerHandler, templateHandler, jwtProvider)
 
 	addr := fmt.Sprintf(":%s", cfg.Port)
 	logger.Info.Printf("Server starting on %s (env: %s)", addr, cfg.Env)

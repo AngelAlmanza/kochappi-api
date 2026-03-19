@@ -1,5 +1,31 @@
 basePath: /api/v1
 definitions:
+  dto.AddTemplateDetailRequest:
+    properties:
+      dayOfWeek:
+        example: 1
+        maximum: 6
+        minimum: 0
+        type: integer
+      displayOrder:
+        example: 1
+        type: integer
+      exerciseId:
+        example: 1
+        type: integer
+      reps:
+        example: 10
+        type: integer
+      sets:
+        example: 3
+        type: integer
+    required:
+    - dayOfWeek
+    - displayOrder
+    - exerciseId
+    - reps
+    - sets
+    type: object
   dto.AuthResponse:
     properties:
       access_token:
@@ -34,6 +60,47 @@ definitions:
         type: string
       videoUrl:
         example: https://example.com/squat.mp4
+        type: string
+    required:
+    - name
+    type: object
+  dto.CreateTemplateDetailRequest:
+    properties:
+      dayOfWeek:
+        example: 1
+        maximum: 6
+        minimum: 0
+        type: integer
+      displayOrder:
+        example: 1
+        type: integer
+      exerciseId:
+        example: 1
+        type: integer
+      reps:
+        example: 10
+        type: integer
+      sets:
+        example: 3
+        type: integer
+    required:
+    - dayOfWeek
+    - displayOrder
+    - exerciseId
+    - reps
+    - sets
+    type: object
+  dto.CreateTemplateRequest:
+    properties:
+      description:
+        example: Classic PPL split
+        type: string
+      details:
+        items:
+          $ref: '#/definitions/dto.CreateTemplateDetailRequest'
+        type: array
+      name:
+        example: Push/Pull/Legs
         type: string
     required:
     - name
@@ -157,6 +224,55 @@ definitions:
     - new_password
     - otp_code
     type: object
+  dto.TemplateDetailResponse:
+    properties:
+      dayOfWeek:
+        example: 1
+        type: integer
+      displayOrder:
+        example: 1
+        type: integer
+      exerciseId:
+        example: 1
+        type: integer
+      id:
+        example: 1
+        type: integer
+      reps:
+        example: 10
+        type: integer
+      sets:
+        example: 3
+        type: integer
+    type: object
+  dto.TemplateResponse:
+    properties:
+      description:
+        example: Classic PPL split
+        type: string
+      id:
+        example: 1
+        type: integer
+      name:
+        example: Push/Pull/Legs
+        type: string
+    type: object
+  dto.TemplateWithDetailsResponse:
+    properties:
+      description:
+        example: Classic PPL split
+        type: string
+      details:
+        items:
+          $ref: '#/definitions/dto.TemplateDetailResponse'
+        type: array
+      id:
+        example: 1
+        type: integer
+      name:
+        example: Push/Pull/Legs
+        type: string
+    type: object
   dto.TokenResponse:
     properties:
       access_token:
@@ -186,6 +302,17 @@ definitions:
         type: string
       videoUrl:
         example: https://example.com/squat.mp4
+        type: string
+    required:
+    - name
+    type: object
+  dto.UpdateTemplateRequest:
+    properties:
+      description:
+        example: Classic PPL split
+        type: string
+      name:
+        example: Push/Pull/Legs
         type: string
     required:
     - name
@@ -649,6 +776,208 @@ paths:
       summary: Update an exercise
       tags:
       - Exercises
+  /templates:
+    get:
+      description: Returns a list of all templates (without details)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.TemplateResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List all templates
+      tags:
+      - Templates
+    post:
+      consumes:
+      - application/json
+      description: Creates a new template, optionally including exercise details
+      parameters:
+      - description: Template data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateTemplateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.TemplateWithDetailsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create a new template
+      tags:
+      - Templates
+  /templates/{id}:
+    delete:
+      description: Deletes a template. Associated details are cascade-deleted and
+        routines referencing this template will have template_id set to NULL
+      parameters:
+      - description: Template ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete a template
+      tags:
+      - Templates
+    get:
+      description: Returns a template with all its details
+      parameters:
+      - description: Template ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.TemplateWithDetailsResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get a template by ID
+      tags:
+      - Templates
+    put:
+      consumes:
+      - application/json
+      description: Updates the name and description of a template (does not affect
+        details)
+      parameters:
+      - description: Template ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Template data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateTemplateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.TemplateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update a template
+      tags:
+      - Templates
+  /templates/{id}/details:
+    post:
+      consumes:
+      - application/json
+      description: Adds a new exercise detail to an existing template
+      parameters:
+      - description: Template ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Detail data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AddTemplateDetailRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.TemplateDetailResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Add a detail to a template
+      tags:
+      - Templates
+  /templates/{id}/details/{detailId}:
+    delete:
+      description: Removes a specific detail from a template
+      parameters:
+      - description: Template ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Detail ID
+        in: path
+        name: detailId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Remove a detail from a template
+      tags:
+      - Templates
 securityDefinitions:
   BearerAuth:
     description: 'Enter your bearer token in the format: Bearer {token}'

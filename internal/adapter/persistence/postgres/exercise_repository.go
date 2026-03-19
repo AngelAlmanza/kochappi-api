@@ -44,6 +44,35 @@ func (r *PostgresExerciseRepository) GetByID(ctx context.Context, id int) (*enti
 	return m.ToDomain(), nil
 }
 
+func (r *PostgresExerciseRepository) GetByIDs(ctx context.Context, ids []int) ([]entity.Exercise, error) {
+	if len(ids) == 0 {
+		return []entity.Exercise{}, nil
+	}
+
+	var models []model.ExerciseModel
+	if err := r.db.WithContext(ctx).Where("id IN ?", ids).Find(&models).Error; err != nil {
+		return nil, err
+	}
+
+	if len(models) != len(ids) {
+		found := make(map[int]struct{}, len(models))
+		for _, m := range models {
+			found[m.ID] = struct{}{}
+		}
+		for _, id := range ids {
+			if _, ok := found[id]; !ok {
+				return nil, &domainerror.ExerciseNotFoundError{ID: id}
+			}
+		}
+	}
+
+	exercises := make([]entity.Exercise, 0, len(models))
+	for _, m := range models {
+		exercises = append(exercises, *m.ToDomain())
+	}
+	return exercises, nil
+}
+
 func (r *PostgresExerciseRepository) Create(ctx context.Context, exercise *entity.Exercise) error {
 	m := model.ExerciseModelFromDomain(exercise)
 	if err := r.db.WithContext(ctx).Create(m).Error; err != nil {

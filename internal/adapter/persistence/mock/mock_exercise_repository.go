@@ -7,11 +7,12 @@ import (
 )
 
 type MockExerciseRepository struct {
-	GetAllFn  func(ctx context.Context) ([]entity.Exercise, error)
-	GetByIDFn func(ctx context.Context, id int) (*entity.Exercise, error)
-	CreateFn  func(ctx context.Context, exercise *entity.Exercise) error
-	UpdateFn  func(ctx context.Context, exercise *entity.Exercise) error
-	DeleteFn  func(ctx context.Context, id int) error
+	GetAllFn   func(ctx context.Context) ([]entity.Exercise, error)
+	GetByIDFn  func(ctx context.Context, id int) (*entity.Exercise, error)
+	GetByIDsFn func(ctx context.Context, ids []int) ([]entity.Exercise, error)
+	CreateFn   func(ctx context.Context, exercise *entity.Exercise) error
+	UpdateFn   func(ctx context.Context, exercise *entity.Exercise) error
+	DeleteFn   func(ctx context.Context, id int) error
 }
 
 func (r *MockExerciseRepository) GetAll(ctx context.Context) ([]entity.Exercise, error) {
@@ -24,6 +25,13 @@ func (r *MockExerciseRepository) GetAll(ctx context.Context) ([]entity.Exercise,
 func (r *MockExerciseRepository) GetByID(ctx context.Context, id int) (*entity.Exercise, error) {
 	if r.GetByIDFn != nil {
 		return r.GetByIDFn(ctx, id)
+	}
+	return nil, nil
+}
+
+func (r *MockExerciseRepository) GetByIDs(ctx context.Context, ids []int) ([]entity.Exercise, error) {
+	if r.GetByIDsFn != nil {
+		return r.GetByIDsFn(ctx, ids)
 	}
 	return nil, nil
 }

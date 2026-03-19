@@ -160,6 +160,38 @@ func (e *CustomerNotFoundError) IsUserError() bool {
 	return true
 }
 
+type TemplateNotFoundError struct {
+	ID int
+}
+
+func (e *TemplateNotFoundError) Error() string {
+	return fmt.Sprintf("template %d not found", e.ID)
+}
+
+func (e *TemplateNotFoundError) Code() string {
+	return "TEMPLATE_NOT_FOUND"
+}
+
+func (e *TemplateNotFoundError) IsUserError() bool {
+	return true
+}
+
+type TemplateDetailNotFoundError struct {
+	ID int
+}
+
+func (e *TemplateDetailNotFoundError) Error() string {
+	return fmt.Sprintf("template detail %d not found", e.ID)
+}
+
+func (e *TemplateDetailNotFoundError) Code() string {
+	return "TEMPLATE_DETAIL_NOT_FOUND"
+}
+
+func (e *TemplateDetailNotFoundError) IsUserError() bool {
+	return true
+}
+
 type CustomerAlreadyExistsError struct {
 	UserID int
 }

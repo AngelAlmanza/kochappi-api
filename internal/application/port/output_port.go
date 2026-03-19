@@ -49,11 +49,30 @@ type CustomerRepository interface {
 	GetByUserID(ctx context.Context, userID int) (*entity.Customer, error)
 }
 
+// Templates
+
+type TemplateRepository interface {
+	GetAll(ctx context.Context) ([]entity.Template, error)
+	GetByID(ctx context.Context, id int) (*entity.Template, error)
+	Create(ctx context.Context, template *entity.Template) error
+	Update(ctx context.Context, template *entity.Template) error
+	Delete(ctx context.Context, id int) error
+}
+
+type TemplateDetailRepository interface {
+	GetByTemplateID(ctx context.Context, templateID int) ([]entity.TemplateDetail, error)
+	GetByID(ctx context.Context, id int) (*entity.TemplateDetail, error)
+	Create(ctx context.Context, detail *entity.TemplateDetail) error
+	CreateBulk(ctx context.Context, details []*entity.TemplateDetail) error
+	DeleteByID(ctx context.Context, id int) error
+}
+
 // Exercises
 
 type ExerciseRepository interface {
 	GetAll(ctx context.Context) ([]entity.Exercise, error)
 	GetByID(ctx context.Context, id int) (*entity.Exercise, error)
+	GetByIDs(ctx context.Context, ids []int) ([]entity.Exercise, error)
 	Create(ctx context.Context, exercise *entity.Exercise) error
 	Update(ctx context.Context, exercise *entity.Exercise) error
 	Delete(ctx context.Context, id int) error
