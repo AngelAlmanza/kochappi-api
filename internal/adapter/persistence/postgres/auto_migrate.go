@@ -8,7 +8,19 @@ import (
 
 func AutoMigrate(db *gorm.DB) error {
 	return db.AutoMigrate(
-		&model.UserModel{},
+		&model.CustomerModel{},
+		&model.ExerciseModel{},
+		&model.ExerciseRoutineModel{},
+		&model.LogCustomerProgressModel{},
+		&model.LogExerciseSessionModel{},
+		&model.ProgressPhotoModel{},
 		&model.RefreshTokenModel{},
+		&model.RoutineDetailModel{},
+		&model.RoutinePeriodModel{},
+		&model.RoutineModel{},
+		&model.TemplateDetailModel{},
+		&model.TemplateModel{},
+		&model.UserModel{},
+		&model.WorkoutSessionModel{},
 	)
 }
