@@ -17,14 +17,14 @@ Kochappi es un **backend API RESTful en Go** que centraliza la relación entre e
 
 | Aspecto | Detalles |
 |---|---|
-| **Lenguaje** | Go 1.21+ |
+| **Lenguaje** | Go 1.23+ |
 | **Framework HTTP** | Gin |
 | **Base de Datos** | PostgreSQL 15+ |
-| **Autenticación** | JWT (RS256) |
+| **Autenticación** | JWT (HS256) con access + refresh tokens |
 | **Arquitectura** | Hexagonal (Ports & Adapters) |
 | **API Style** | RESTful JSON |
 | **Testing** | Unit + Integration + E2E |
-| **Deployment** | Docker + Kubernetes ready |
+| **Deployment** | Docker ready |
 
 ## 👥 Actores del Sistema (Consumidores de la API)
 
@@ -50,16 +50,16 @@ La arquitectura sigue el patrón **Hexagonal (Ports & Adapters)** para separar l
 kochappi-api/
 ├── cmd/
 │   └── api/
-│       └── main.go                 # Punto de entrada de la aplicación
+│       └── main.go                 # Punto de entrada con wiring de dependencias
 │
 ├── internal/                        # Código privado (no exportable)
 │   ├── domain/                     # Capa de dominio (lógica de negocio pura)
-│   │   ├── entity/                 # Entidades core (Trainer, Client, Routine, Exercise, etc)
-│   │   ├── value_object/           # Objetos de valor (Email, Weight, Password, etc)
+│   │   ├── entity/                 # Entidades core (User, etc.)
+│   │   ├── value_object/           # Objetos de valor (Email, Password)
 │   │   └── error/                  # Errores específicos del dominio
 │   │
 │   ├── application/                # Capa de aplicación (orquestación de casos de uso)
-│   │   ├── service/                # Use cases (CreateRoutine, RegisterSession, etc)
+│   │   ├── service/                # Use cases (auth/register, auth/login, etc.)
 │   │   ├── dto/                    # Data Transfer Objects (request/response shapes)
 │   │   └── port/                   # Puertos (interfaces de contrato)
 │   │
@@ -68,34 +68,26 @@ kochappi-api/
 │   │   ├── persistence/            # Adaptador de persistencia
 │   │   │   ├── postgres/           # Implementación PostgreSQL + GORM
 │   │   │   │   ├── migrations/     # SQL migrations versionadas
-│   │   │   │   └── model/          # Modelos de base de datos
-│   │   │   └── mock/               # Mocks para testing
-│   │   ├── auth/                   # Adaptador de autenticación (JWT, password hashing)
+│   │   │   │   └── model/          # Modelos de base de datos (separados del dominio)
+│   │   │   └── mock/               # Mocks para unit testing
+│   │   ├── auth/                   # Adaptador de autenticación (JWT, bcrypt, OTP)
 │   │   └── config/                 # Configuración de la app
 │   │
-│   └── shared/                     # Utilidades compartidas (logger, validator, pagination)
-│
-├── test/                            # Tests de integración y E2E
-│   ├── integration/                # Tests contra BD real
-│   ├── fixtures/                   # Datos de prueba
-│   └── docker-compose.test.yml     # BD para tests
+│   └── shared/                     # Utilidades compartidas (logger)
 │
 ├── config/
-│   └── .env.example                # Variables de entorno
+│   ├── .env.example                # Variables de entorno de referencia
+│   └── .env.local                  # Variables para desarrollo local (no se commitea)
 │
-├── scripts/
-│   ├── migrate.sh                  # Script de migraciones
-│   └── seed.sh                     # Script para poblar datos
-│
-├── Dockerfile                      # Compilación multietapa
-├── docker-compose.yml              # Servicios locales (PostgreSQL + API)
-├── Makefile                        # Comandos de desarrollo
-├── go.mod & go.sum                 # Dependencias
-│
-├── docs/                           # Documentación (ver sección Documentación abajo)
+├── docs/                           # Documentación
 │   ├── PRD/                        # Product Requirements
 │   └── architecture/               # Especificaciones técnicas
 │
+├── .air.toml                       # Configuración de hot reload
+├── Dockerfile                      # Compilación multietapa
+├── docker-compose.yml              # PostgreSQL para desarrollo local
+├── Makefile                        # Comandos de desarrollo
+├── go.mod & go.sum                 # Dependencias
 ├── CLAUDE.md                       # Guía de desarrollo
 └── README.md                       # Este archivo
 ```
@@ -127,10 +119,10 @@ Consulta la arquitectura técnica en [`docs/architecture/`](docs/architecture/RE
 ## 🚀 Getting Started
 
 ### Requisitos Previos
-- Go 1.21+
-- PostgreSQL 15+ (o Docker)
+- Go 1.23+
+- Docker (para PostgreSQL)
 - Git
-- Make (opcional, para usar Makefile)
+- [air](https://github.com/air-verse/air) (opcional, para hot reload)
 
 ### Instalación Rápida
 ```bash
@@ -147,14 +139,23 @@ go mod download
 # Iniciar PostgreSQL con Docker
 docker-compose up -d
 
-# Ejecutar migraciones
-make migrate
+# Iniciar el servidor (las migraciones se ejecutan automáticamente al iniciar)
+go run ./cmd/api/
 
-# Iniciar servidor de desarrollo con hot reload
+# O con hot reload (requiere air instalado)
 make dev
 ```
 
 El servidor estará disponible en `http://localhost:8080`
+
+### Ejecutar Tests
+```bash
+# Unit tests (sin BD, rápidos)
+go test ./internal/... -v
+
+# Todos los tests con cobertura
+go test ./... -v -cover
+```
 
 Para más detalles, ver [docs/architecture/07_development_workflow.md](docs/architecture/07_development_workflow.md)
 
