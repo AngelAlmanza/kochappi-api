@@ -7,7 +7,7 @@ import (
 )
 
 type UserModel struct {
-	ID           string     `gorm:"type:uuid;primaryKey"`
+	ID           int        `gorm:"primaryKey;autoIncrement"`
 	Name         string     `gorm:"type:varchar(255);not null"`
 	Email        string     `gorm:"type:varchar(255);uniqueIndex;not null"`
 	PasswordHash string     `gorm:"type:varchar(255);not null"`

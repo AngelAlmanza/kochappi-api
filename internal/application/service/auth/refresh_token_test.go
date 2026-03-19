@@ -16,9 +16,9 @@ func TestRefreshTokenUseCase_ShouldRotateTokens(t *testing.T) {
 	var storedTokenID string
 
 	userRepo := &mock.MockUserRepository{
-		GetByIDFn: func(ctx context.Context, id string) (*entity.User, error) {
+		GetByIDFn: func(ctx context.Context, id int) (*entity.User, error) {
 			return &entity.User{
-				ID:   "user-1",
+				ID:   1,
 				Role: entity.ROLE_TRAINER,
 			}, nil
 		},
@@ -32,7 +32,7 @@ func TestRefreshTokenUseCase_ShouldRotateTokens(t *testing.T) {
 			deletedTokenID = tokenID
 			return nil
 		},
-		StoreFn: func(ctx context.Context, userID string, tokenID string, expiresAt int64) error {
+		StoreFn: func(ctx context.Context, userID int, tokenID string, expiresAt int64) error {
 			storedTokenID = tokenID
 			return nil
 		},
@@ -66,8 +66,8 @@ func TestRefreshTokenUseCase_ShouldRotateTokens(t *testing.T) {
 
 func TestRefreshTokenUseCase_ShouldFailWhenUserNotFound(t *testing.T) {
 	userRepo := &mock.MockUserRepository{
-		GetByIDFn: func(ctx context.Context, id string) (*entity.User, error) {
-			return nil, &domainerror.UserNotFoundError{Identifier: id}
+		GetByIDFn: func(ctx context.Context, id int) (*entity.User, error) {
+			return nil, &domainerror.UserNotFoundError{Identifier: "1"}
 		},
 	}
 
@@ -96,8 +96,8 @@ func TestRefreshTokenUseCase_ShouldFailWhenUserNotFound(t *testing.T) {
 
 func TestRefreshTokenUseCase_ShouldFailWithInvalidToken(t *testing.T) {
 	tokenProvider := &mock.MockTokenProvider{
-		ValidateRefreshTokenFn: func(tokenString string) (string, string, error) {
-			return "", "", errors.New("invalid token")
+		ValidateRefreshTokenFn: func(tokenString string) (int, string, error) {
+			return 0, "", errors.New("invalid token")
 		},
 	}
 

@@ -64,7 +64,7 @@ func TestRegisterUseCase_ShouldFailWhenEmailAlreadyExists(t *testing.T) {
 	userRepo := &mock.MockUserRepository{
 		GetByEmailFn: func(ctx context.Context, email string) (*entity.User, error) {
 			return &entity.User{
-				ID:    "existing-id",
+				ID:    1,
 				Email: email,
 			}, nil
 		},

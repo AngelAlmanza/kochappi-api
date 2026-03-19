@@ -6,11 +6,8 @@ import (
 )
 
 func TestNewUser_ShouldCreateUserWithCorrectFields(t *testing.T) {
-	user := NewUser("id-1", "John", "john@example.com", "hashed", ROLE_TRAINER)
+	user := NewUser("John", "john@example.com", "hashed", ROLE_TRAINER)
 
-	if user.ID != "id-1" {
-		t.Errorf("Expected ID 'id-1', got '%s'", user.ID)
-	}
 	if user.Name != "John" {
 		t.Errorf("Expected Name 'John', got '%s'", user.Name)
 	}
@@ -26,8 +23,8 @@ func TestNewUser_ShouldCreateUserWithCorrectFields(t *testing.T) {
 }
 
 func TestUser_IsTrainer(t *testing.T) {
-	trainer := NewUser("id-1", "John", "john@example.com", "hashed", ROLE_TRAINER)
-	client := NewUser("id-2", "Jane", "jane@example.com", "hashed", ROLE_CLIENT)
+	trainer := NewUser("John", "john@example.com", "hashed", ROLE_TRAINER)
+	client := NewUser("Jane", "jane@example.com", "hashed", ROLE_CLIENT)
 
 	if !trainer.IsTrainer() {
 		t.Error("Expected trainer.IsTrainer() to be true")
@@ -44,7 +41,7 @@ func TestUser_IsTrainer(t *testing.T) {
 }
 
 func TestUser_SetOTP_And_IsOTPValid(t *testing.T) {
-	user := NewUser("id-1", "John", "john@example.com", "hashed", ROLE_TRAINER)
+	user := NewUser("John", "john@example.com", "hashed", ROLE_TRAINER)
 
 	expiresAt := time.Now().Add(10 * time.Minute)
 	user.SetOTP("123456", expiresAt)
@@ -58,7 +55,7 @@ func TestUser_SetOTP_And_IsOTPValid(t *testing.T) {
 }
 
 func TestUser_IsOTPValid_ShouldReturnFalseWhenExpired(t *testing.T) {
-	user := NewUser("id-1", "John", "john@example.com", "hashed", ROLE_TRAINER)
+	user := NewUser("John", "john@example.com", "hashed", ROLE_TRAINER)
 
 	expiresAt := time.Now().Add(-1 * time.Minute)
 	user.SetOTP("123456", expiresAt)
@@ -69,7 +66,7 @@ func TestUser_IsOTPValid_ShouldReturnFalseWhenExpired(t *testing.T) {
 }
 
 func TestUser_IsOTPValid_ShouldReturnFalseWhenNoOTPSet(t *testing.T) {
-	user := NewUser("id-1", "John", "john@example.com", "hashed", ROLE_TRAINER)
+	user := NewUser("John", "john@example.com", "hashed", ROLE_TRAINER)
 
 	if user.IsOTPValid("123456") {
 		t.Error("Expected OTP to be invalid when no OTP set")
@@ -77,7 +74,7 @@ func TestUser_IsOTPValid_ShouldReturnFalseWhenNoOTPSet(t *testing.T) {
 }
 
 func TestUser_ClearOTP(t *testing.T) {
-	user := NewUser("id-1", "John", "john@example.com", "hashed", ROLE_TRAINER)
+	user := NewUser("John", "john@example.com", "hashed", ROLE_TRAINER)
 
 	expiresAt := time.Now().Add(10 * time.Minute)
 	user.SetOTP("123456", expiresAt)

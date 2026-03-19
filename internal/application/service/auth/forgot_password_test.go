@@ -18,7 +18,7 @@ func TestForgotPasswordUseCase_ShouldSendOTPForExistingUser(t *testing.T) {
 	userRepo := &mock.MockUserRepository{
 		GetByEmailFn: func(ctx context.Context, email string) (*entity.User, error) {
 			return &entity.User{
-				ID:    "user-1",
+				ID:    1,
 				Email: "john@example.com",
 			}, nil
 		},
@@ -71,7 +71,7 @@ func TestForgotPasswordUseCase_ShouldSendOTPForExistingUser(t *testing.T) {
 func TestForgotPasswordUseCase_ShouldFailWhenSendFails(t *testing.T) {
 	userRepo := &mock.MockUserRepository{
 		GetByEmailFn: func(ctx context.Context, email string) (*entity.User, error) {
-			return &entity.User{ID: "user-1", Email: email}, nil
+			return &entity.User{ID: 1, Email: email}, nil
 		},
 		UpdateFn: func(ctx context.Context, user *entity.User) error {
 			return nil

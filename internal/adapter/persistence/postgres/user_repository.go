@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"errors"
+	"strconv"
 	"time"
 
 	"kochappi/internal/adapter/persistence/postgres/model"
@@ -22,15 +23,19 @@ func NewPostgresUserRepository(db *gorm.DB) *PostgresUserRepository {
 
 func (r *PostgresUserRepository) Create(ctx context.Context, user *entity.User) error {
 	m := model.UserModelFromEntity(user)
-	return r.db.WithContext(ctx).Create(m).Error
+	if err := r.db.WithContext(ctx).Create(m).Error; err != nil {
+		return err
+	}
+	user.ID = m.ID
+	return nil
 }
 
-func (r *PostgresUserRepository) GetByID(ctx context.Context, id string) (*entity.User, error) {
+func (r *PostgresUserRepository) GetByID(ctx context.Context, id int) (*entity.User, error) {
 	var m model.UserModel
 	err := r.db.WithContext(ctx).Where("id = ?", id).First(&m).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, &domainerror.UserNotFoundError{Identifier: id}
+			return nil, &domainerror.UserNotFoundError{Identifier: strconv.Itoa(id)}
 		}
 		return nil, err
 	}

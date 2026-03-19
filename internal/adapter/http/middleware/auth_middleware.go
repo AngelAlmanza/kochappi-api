@@ -40,9 +40,9 @@ func AuthMiddleware(tokenProvider port.TokenProvider) gin.HandlerFunc {
 	}
 }
 
-func GetUserIDFromContext(c *gin.Context) string {
+func GetUserIDFromContext(c *gin.Context) int {
 	userID, _ := c.Get(CONTEXT_KEY_USER_ID)
-	return userID.(string)
+	return userID.(int)
 }
 
 func GetRoleFromContext(c *gin.Context) string {

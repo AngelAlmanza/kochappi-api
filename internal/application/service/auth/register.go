@@ -8,8 +8,6 @@ import (
 	"kochappi/internal/domain/entity"
 	domainerror "kochappi/internal/domain/error"
 	"kochappi/internal/domain/value_object"
-
-	"github.com/google/uuid"
 )
 
 type RegisterUseCase struct {
@@ -54,7 +52,6 @@ func (uc *RegisterUseCase) Execute(ctx context.Context, req *dto.RegisterRequest
 	}
 
 	user := entity.NewUser(
-		uuid.New().String(),
 		req.Name,
 		email.String(),
 		hashedPassword,

@@ -3,13 +3,13 @@ package mock
 import "context"
 
 type MockRefreshTokenRepository struct {
-	StoreFn            func(ctx context.Context, userID string, tokenID string, expiresAt int64) error
-	ExistsFn           func(ctx context.Context, tokenID string) (bool, error)
-	DeleteByIDFn       func(ctx context.Context, tokenID string) error
-	DeleteAllByUserIDFn func(ctx context.Context, userID string) error
+	StoreFn             func(ctx context.Context, userID int, tokenID string, expiresAt int64) error
+	ExistsFn            func(ctx context.Context, tokenID string) (bool, error)
+	DeleteByIDFn        func(ctx context.Context, tokenID string) error
+	DeleteAllByUserIDFn func(ctx context.Context, userID int) error
 }
 
-func (r *MockRefreshTokenRepository) Store(ctx context.Context, userID string, tokenID string, expiresAt int64) error {
+func (r *MockRefreshTokenRepository) Store(ctx context.Context, userID int, tokenID string, expiresAt int64) error {
 	if r.StoreFn != nil {
 		return r.StoreFn(ctx, userID, tokenID, expiresAt)
 	}
@@ -30,7 +30,7 @@ func (r *MockRefreshTokenRepository) DeleteByID(ctx context.Context, tokenID str
 	return nil
 }
 
-func (r *MockRefreshTokenRepository) DeleteAllByUserID(ctx context.Context, userID string) error {
+func (r *MockRefreshTokenRepository) DeleteAllByUserID(ctx context.Context, userID int) error {
 	if r.DeleteAllByUserIDFn != nil {
 		return r.DeleteAllByUserIDFn(ctx, userID)
 	}

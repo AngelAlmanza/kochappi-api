@@ -338,8 +338,8 @@ const docTemplate = `{
                     "example": "client"
                 },
                 "user_id": {
-                    "type": "string",
-                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
@@ -442,8 +442,8 @@ const docTemplate = `{
                     "example": "john@example.com"
                 },
                 "id": {
-                    "type": "string",
-                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                    "type": "integer",
+                    "example": 1
                 },
                 "name": {
                     "type": "string",

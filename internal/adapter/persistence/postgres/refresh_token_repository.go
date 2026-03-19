@@ -17,7 +17,7 @@ func NewPostgresRefreshTokenRepository(db *gorm.DB) *PostgresRefreshTokenReposit
 	return &PostgresRefreshTokenRepository{db: db}
 }
 
-func (r *PostgresRefreshTokenRepository) Store(ctx context.Context, userID string, tokenID string, expiresAt int64) error {
+func (r *PostgresRefreshTokenRepository) Store(ctx context.Context, userID int, tokenID string, expiresAt int64) error {
 	m := &model.RefreshTokenModel{
 		ID:        tokenID,
 		UserID:    userID,
@@ -45,7 +45,7 @@ func (r *PostgresRefreshTokenRepository) DeleteByID(ctx context.Context, tokenID
 		Delete(&model.RefreshTokenModel{}).Error
 }
 
-func (r *PostgresRefreshTokenRepository) DeleteAllByUserID(ctx context.Context, userID string) error {
+func (r *PostgresRefreshTokenRepository) DeleteAllByUserID(ctx context.Context, userID int) error {
 	return r.db.WithContext(ctx).
 		Where("user_id = ?", userID).
 		Delete(&model.RefreshTokenModel{}).Error

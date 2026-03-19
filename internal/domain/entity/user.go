@@ -10,7 +10,7 @@ const (
 )
 
 type User struct {
-	ID           string
+	ID           int
 	Name         string
 	Email        string
 	PasswordHash string
@@ -21,10 +21,9 @@ type User struct {
 	UpdatedAt    time.Time
 }
 
-func NewUser(id, name, email, passwordHash string, role Role) *User {
+func NewUser(name, email, passwordHash string, role Role) *User {
 	now := time.Now()
 	return &User{
-		ID:           id,
 		Name:         name,
 		Email:        email,
 		PasswordHash: passwordHash,

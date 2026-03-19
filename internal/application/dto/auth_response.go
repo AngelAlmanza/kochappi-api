@@ -7,7 +7,7 @@ type AuthResponse struct {
 }
 
 type UserResponse struct {
-	ID    string `json:"id" example:"550e8400-e29b-41d4-a716-446655440000"`
+	ID    int    `json:"id" example:"1"`
 	Name  string `json:"name" example:"John Doe"`
 	Email string `json:"email" example:"john@example.com"`
 	Role  string `json:"role" example:"client"`
@@ -30,6 +30,6 @@ type ErrorResponse struct {
 
 // MeResponse represents the response for the authenticated user info endpoint.
 type MeResponse struct {
-	UserID string `json:"user_id" example:"550e8400-e29b-41d4-a716-446655440000"`
+	UserID int    `json:"user_id" example:"1"`
 	Role   string `json:"role" example:"client"`
 }

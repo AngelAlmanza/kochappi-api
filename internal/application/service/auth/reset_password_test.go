@@ -13,13 +13,13 @@ import (
 
 func TestResetPasswordUseCase_ShouldResetPasswordWithValidOTP(t *testing.T) {
 	var updatedUser *entity.User
-	var deletedUserID string
+	var deletedUserID int
 
 	otpExpiry := time.Now().Add(10 * time.Minute)
 	userRepo := &mock.MockUserRepository{
 		GetByEmailFn: func(ctx context.Context, email string) (*entity.User, error) {
 			user := &entity.User{
-				ID:           "user-1",
+				ID:           1,
 				Email:        "john@example.com",
 				PasswordHash: "old_hash",
 				OTPCode:      "123456",
@@ -34,7 +34,7 @@ func TestResetPasswordUseCase_ShouldResetPasswordWithValidOTP(t *testing.T) {
 	}
 
 	refreshRepo := &mock.MockRefreshTokenRepository{
-		DeleteAllByUserIDFn: func(ctx context.Context, userID string) error {
+		DeleteAllByUserIDFn: func(ctx context.Context, userID int) error {
 			deletedUserID = userID
 			return nil
 		},
@@ -63,8 +63,8 @@ func TestResetPasswordUseCase_ShouldResetPasswordWithValidOTP(t *testing.T) {
 	if updatedUser.OTPCode != "" {
 		t.Error("Expected OTP to be cleared after reset")
 	}
-	if deletedUserID != "user-1" {
-		t.Errorf("Expected all refresh tokens for 'user-1' to be deleted, got '%s'", deletedUserID)
+	if deletedUserID != 1 {
+		t.Errorf("Expected all refresh tokens for user 1 to be deleted, got %d", deletedUserID)
 	}
 }
 
@@ -73,7 +73,7 @@ func TestResetPasswordUseCase_ShouldFailWithInvalidOTP(t *testing.T) {
 	userRepo := &mock.MockUserRepository{
 		GetByEmailFn: func(ctx context.Context, email string) (*entity.User, error) {
 			return &entity.User{
-				ID:           "user-1",
+				ID:           1,
 				Email:        "john@example.com",
 				OTPCode:      "123456",
 				OTPExpiresAt: &otpExpiry,
@@ -102,7 +102,7 @@ func TestResetPasswordUseCase_ShouldFailWithExpiredOTP(t *testing.T) {
 	userRepo := &mock.MockUserRepository{
 		GetByEmailFn: func(ctx context.Context, email string) (*entity.User, error) {
 			return &entity.User{
-				ID:           "user-1",
+				ID:           1,
 				Email:        "john@example.com",
 				OTPCode:      "123456",
 				OTPExpiresAt: &otpExpiry,

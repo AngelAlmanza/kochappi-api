@@ -15,7 +15,7 @@ func TestLoginUseCase_ShouldLoginWithValidCredentials(t *testing.T) {
 	userRepo := &mock.MockUserRepository{
 		GetByEmailFn: func(ctx context.Context, email string) (*entity.User, error) {
 			return &entity.User{
-				ID:           "user-1",
+				ID:           1,
 				Name:         "John Doe",
 				Email:        "john@example.com",
 				PasswordHash: "hashed_securepass123",
@@ -42,8 +42,8 @@ func TestLoginUseCase_ShouldLoginWithValidCredentials(t *testing.T) {
 	if resp == nil {
 		t.Fatal("Expected response, got nil")
 	}
-	if resp.User.ID != "user-1" {
-		t.Errorf("Expected user ID 'user-1', got '%s'", resp.User.ID)
+	if resp.User.ID != 1 {
+		t.Errorf("Expected user ID 1, got %d", resp.User.ID)
 	}
 	if resp.AccessToken == "" {
 		t.Error("Expected access token to be set")
@@ -57,7 +57,7 @@ func TestLoginUseCase_ShouldFailWithWrongPassword(t *testing.T) {
 	userRepo := &mock.MockUserRepository{
 		GetByEmailFn: func(ctx context.Context, email string) (*entity.User, error) {
 			return &entity.User{
-				ID:           "user-1",
+				ID:           1,
 				Email:        "john@example.com",
 				PasswordHash: "hashed_correctpassword",
 				Role:         entity.ROLE_TRAINER,
