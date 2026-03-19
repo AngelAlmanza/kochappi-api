@@ -52,6 +52,14 @@ func mapDomainErrorToHTTPStatus(err domainerror.DomainError) int {
 		return http.StatusForbidden
 	case "EXERCISE_NOT_FOUND":
 		return http.StatusNotFound
+	case "CUSTOMER_NOT_FOUND":
+		return http.StatusNotFound
+	case "CUSTOMER_ALREADY_EXISTS":
+		return http.StatusConflict
+	case "USER_NOT_CUSTOMER":
+		return http.StatusUnprocessableEntity
+	case "INVALID_BIRTHDATE":
+		return http.StatusBadRequest
 	default:
 		return http.StatusInternalServerError
 	}

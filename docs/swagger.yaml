@@ -11,6 +11,22 @@ definitions:
       user:
         $ref: '#/definitions/dto.UserResponse'
     type: object
+  dto.CreateCustomerRequest:
+    properties:
+      birthdate:
+        example: "1990-01-01"
+        type: string
+      name:
+        example: Jhon Doe
+        type: string
+      userId:
+        example: 1
+        type: integer
+    required:
+    - birthdate
+    - name
+    - userId
+    type: object
   dto.CreateExerciseRequest:
     properties:
       name:
@@ -21,6 +37,18 @@ definitions:
         type: string
     required:
     - name
+    type: object
+  dto.CustomerResponse:
+    properties:
+      birthdate:
+        example: "1990-01-01"
+        type: string
+      id:
+        example: 1
+        type: integer
+      name:
+        example: John Doe
+        type: string
     type: object
   dto.ErrorResponse:
     properties:
@@ -137,6 +165,19 @@ definitions:
       refresh_token:
         example: eyJhbGciOiJIUzI1NiIs...
         type: string
+    type: object
+  dto.UpdateCustomerRequest:
+    properties:
+      birthdate:
+        example: "1990-01-01"
+        type: string
+      name:
+        description: ID        int    `json:"id" binding:"required" example:"1"`
+        example: Jhon Doe
+        type: string
+    required:
+    - birthdate
+    - name
     type: object
   dto.UpdateExerciseRequest:
     properties:
@@ -337,6 +378,146 @@ paths:
       summary: Reset password
       tags:
       - Auth
+  /customers:
+    get:
+      description: Returns a list of all customers
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.CustomerResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List all customers
+      tags:
+      - Customers
+    post:
+      consumes:
+      - application/json
+      description: Creates a new customer linked to an existing user with the client
+        role
+      parameters:
+      - description: Customer data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateCustomerRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.CustomerResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create a new customer
+      tags:
+      - Customers
+  /customers/{id}:
+    delete:
+      description: Deletes a customer record (does not delete the associated user)
+      parameters:
+      - description: Customer ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete a customer
+      tags:
+      - Customers
+    get:
+      description: Returns a single customer by its ID
+      parameters:
+      - description: Customer ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CustomerResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get a customer by ID
+      tags:
+      - Customers
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing customer's name and birthdate
+      parameters:
+      - description: Customer ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Customer data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateCustomerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CustomerResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update a customer
+      tags:
+      - Customers
   /exercises:
     get:
       description: Returns a list of all exercises

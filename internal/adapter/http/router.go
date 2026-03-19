@@ -13,6 +13,7 @@ import (
 func NewRouter(
 	authHandler *handler.AuthHandler,
 	exerciseHandler *handler.ExerciseHandler,
+	customerHandler *handler.CustomerHandler,
 	tokenProvider port.TokenProvider,
 ) *gin.Engine {
 	router := gin.Default()
@@ -38,6 +39,15 @@ func NewRouter(
 		protected.Use(middleware.AuthMiddleware(tokenProvider))
 		{
 			protected.GET("/auth/me", authHandler.Me)
+
+			customersGroup := protected.Group("/customers")
+			{
+				customersGroup.GET("", customerHandler.GetCustomers)
+				customersGroup.GET("/:id", customerHandler.GetCustomerByID)
+				customersGroup.POST("", customerHandler.CreateCustomer)
+				customersGroup.PUT("/:id", customerHandler.UpdateCustomer)
+				customersGroup.DELETE("/:id", customerHandler.DeleteCustomer)
+			}
 
 			exercisesGroup := protected.Group("/exercises")
 			{

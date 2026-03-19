@@ -96,6 +96,22 @@ func (e *UnauthorizedError) IsUserError() bool {
 	return true
 }
 
+type UserNotCustomerError struct {
+	ID int
+}
+
+func (e *UserNotCustomerError) Error() string {
+	return fmt.Sprintf("user %d is not a customer", e.ID)
+}
+
+func (e *UserNotCustomerError) Code() string {
+	return "USER_NOT_CUSTOMER"
+}
+
+func (e *UserNotCustomerError) IsUserError() bool {
+	return true
+}
+
 type ExerciseNotFoundError struct {
 	ID int
 }
@@ -109,5 +125,53 @@ func (e *ExerciseNotFoundError) Code() string {
 }
 
 func (e *ExerciseNotFoundError) IsUserError() bool {
+	return true
+}
+
+type InvalidBirthdateError struct {
+	Birthdate string
+}
+
+func (e *InvalidBirthdateError) Error() string {
+	return fmt.Sprintf("invalid birthdate: %s", e.Birthdate)
+}
+
+func (e *InvalidBirthdateError) Code() string {
+	return "INVALID_BIRTHDATE"
+}
+
+func (e *InvalidBirthdateError) IsUserError() bool {
+	return true
+}
+
+type CustomerNotFoundError struct {
+	ID int
+}
+
+func (e *CustomerNotFoundError) Error() string {
+	return fmt.Sprintf("customer %d not found", e.ID)
+}
+
+func (e *CustomerNotFoundError) Code() string {
+	return "CUSTOMER_NOT_FOUND"
+}
+
+func (e *CustomerNotFoundError) IsUserError() bool {
+	return true
+}
+
+type CustomerAlreadyExistsError struct {
+	UserID int
+}
+
+func (e *CustomerAlreadyExistsError) Error() string {
+	return fmt.Sprintf("a customer already exists for user %d", e.UserID)
+}
+
+func (e *CustomerAlreadyExistsError) Code() string {
+	return "CUSTOMER_ALREADY_EXISTS"
+}
+
+func (e *CustomerAlreadyExistsError) IsUserError() bool {
 	return true
 }

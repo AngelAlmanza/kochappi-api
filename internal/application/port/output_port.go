@@ -38,6 +38,17 @@ type OTPService interface {
 	Send(ctx context.Context, email string, code string) error
 }
 
+// Customers
+
+type CustomerRepository interface {
+	GetAll(ctx context.Context) ([]entity.Customer, error)
+	GetByID(ctx context.Context, id int) (*entity.Customer, error)
+	Create(ctx context.Context, customer *entity.Customer) error
+	Update(ctx context.Context, customer *entity.Customer) error
+	Delete(ctx context.Context, id int) error
+	GetByUserID(ctx context.Context, userID int) (*entity.Customer, error)
+}
+
 // Exercises
 
 type ExerciseRepository interface {
