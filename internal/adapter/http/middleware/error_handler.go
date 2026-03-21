@@ -70,6 +70,18 @@ func mapDomainErrorToHTTPStatus(err domainerror.DomainError) int {
 		return http.StatusNotFound
 	case "ACTIVE_ROUTINE_EXISTS":
 		return http.StatusConflict
+	case "PROGRESS_LOG_NOT_FOUND":
+		return http.StatusNotFound
+	case "PROGRESS_PHOTO_NOT_FOUND":
+		return http.StatusNotFound
+	case "INVALID_CHECK_DATE":
+		return http.StatusBadRequest
+	case "INVALID_WEIGHT":
+		return http.StatusBadRequest
+	case "INVALID_PICTURE_TYPE":
+		return http.StatusBadRequest
+	case "FILE_UPLOAD_ERROR":
+		return http.StatusInternalServerError
 	default:
 		return http.StatusInternalServerError
 	}

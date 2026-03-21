@@ -2,6 +2,8 @@ package port
 
 import (
 	"context"
+	"io"
+
 	"kochappi/internal/domain/entity"
 )
 
@@ -103,4 +105,28 @@ type ExerciseRepository interface {
 	Create(ctx context.Context, exercise *entity.Exercise) error
 	Update(ctx context.Context, exercise *entity.Exercise) error
 	Delete(ctx context.Context, id int) error
+}
+
+// Progress
+
+type LogCustomerProgressRepository interface {
+	GetByCustomerID(ctx context.Context, customerID int) ([]entity.LogCustomerProgress, error)
+	GetByID(ctx context.Context, id int) (*entity.LogCustomerProgress, error)
+	Create(ctx context.Context, log *entity.LogCustomerProgress) error
+	Delete(ctx context.Context, id int) error
+}
+
+type ProgressPhotoRepository interface {
+	GetByLogID(ctx context.Context, logID int) ([]entity.ProgressPhoto, error)
+	GetByID(ctx context.Context, id int) (*entity.ProgressPhoto, error)
+	Create(ctx context.Context, photo *entity.ProgressPhoto) error
+	Delete(ctx context.Context, id int) error
+	DeleteByLogID(ctx context.Context, logID int) error
+}
+
+// Storage
+
+type FileStorage interface {
+	Upload(ctx context.Context, filename string, file io.Reader) (url string, err error)
+	Delete(ctx context.Context, url string) error
 }

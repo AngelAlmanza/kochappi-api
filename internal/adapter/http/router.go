@@ -16,9 +16,12 @@ func NewRouter(
 	customerHandler *handler.CustomerHandler,
 	templateHandler *handler.TemplateHandler,
 	routineHandler *handler.RoutineHandler,
+	progressHandler *handler.ProgressHandler,
 	tokenProvider port.TokenProvider,
 ) *gin.Engine {
 	router := gin.Default()
+
+	router.Static("/uploads", "./uploads")
 
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "ok"})
@@ -49,6 +52,16 @@ func NewRouter(
 				customersGroup.POST("", customerHandler.CreateCustomer)
 				customersGroup.PUT("/:id", customerHandler.UpdateCustomer)
 				customersGroup.DELETE("/:id", customerHandler.DeleteCustomer)
+
+				progressGroup := customersGroup.Group("/:id/log_customer_progress")
+				{
+					progressGroup.GET("", progressHandler.GetProgressLogs)
+					progressGroup.POST("", progressHandler.CreateProgressLog)
+					progressGroup.GET("/:logId", progressHandler.GetProgressLogByID)
+					progressGroup.DELETE("/:logId", progressHandler.DeleteProgressLog)
+					progressGroup.POST("/:logId/photos", progressHandler.UploadProgressPhoto)
+					progressGroup.DELETE("/:logId/photos/:photoId", progressHandler.DeleteProgressPhoto)
+				}
 			}
 
 			templatesGroup := protected.Group("/templates")

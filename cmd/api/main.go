@@ -9,9 +9,11 @@ import (
 	httpAdapter "kochappi/internal/adapter/http"
 	"kochappi/internal/adapter/http/handler"
 	"kochappi/internal/adapter/persistence/postgres"
+	"kochappi/internal/adapter/storage"
 	"kochappi/internal/application/service/auth"
 	"kochappi/internal/application/service/customers"
 	"kochappi/internal/application/service/exercises"
+	"kochappi/internal/application/service/progress"
 	"kochappi/internal/application/service/routines"
 	"kochappi/internal/application/service/templates"
 	"kochappi/internal/shared/logger"
@@ -51,6 +53,7 @@ func main() {
 	passwordHasher := authAdapter.NewBcryptPasswordHasher()
 	jwtProvider := authAdapter.NewJWTProvider(cfg.JWTSecret, cfg.JWTAccessExpiryMin, cfg.JWTRefreshExpiryDay)
 	otpService := authAdapter.NewConsoleOTPService()
+	fileStorage := storage.NewLocalFileStorage("./uploads", "/uploads")
 
 	// Repositories
 	userRepo := postgres.NewPostgresUserRepository(db)
@@ -62,6 +65,8 @@ func main() {
 	routineRepo := postgres.NewPostgresRoutineRepository(db)
 	routineDetailRepo := postgres.NewPostgresRoutineDetailRepository(db)
 	routinePeriodRepo := postgres.NewPostgresRoutinePeriodRepository(db)
+	logProgressRepo := postgres.NewLogCustomerProgressRepository(db)
+	progressPhotoRepo := postgres.NewProgressPhotoRepository(db)
 
 	// Use Cases
 	registerUseCase := auth.NewRegisterUseCase(userRepo, passwordHasher, jwtProvider, refreshTokenRepo)
@@ -99,6 +104,13 @@ func main() {
 	createCustomerUseCase := customers.NewCreateCustomerUseCase(customerRepo, userRepo)
 	updateCustomerUseCase := customers.NewUpdateCustomerUseCase(customerRepo)
 	deleteCustomerUseCase := customers.NewDeleteCustomerUseCase(customerRepo)
+
+	getProgressLogsUseCase := progress.NewGetProgressLogsUseCase(customerRepo, logProgressRepo)
+	getProgressLogByIDUseCase := progress.NewGetProgressLogByIDUseCase(customerRepo, logProgressRepo, progressPhotoRepo)
+	createProgressLogUseCase := progress.NewCreateProgressLogUseCase(customerRepo, logProgressRepo)
+	deleteProgressLogUseCase := progress.NewDeleteProgressLogUseCase(customerRepo, logProgressRepo, progressPhotoRepo, fileStorage)
+	uploadProgressPhotoUseCase := progress.NewUploadProgressPhotoUseCase(customerRepo, logProgressRepo, progressPhotoRepo, fileStorage)
+	deleteProgressPhotoUseCase := progress.NewDeleteProgressPhotoUseCase(customerRepo, logProgressRepo, progressPhotoRepo, fileStorage)
 
 	// Handlers
 	authHandler := handler.NewAuthHandler(
@@ -144,8 +156,17 @@ func main() {
 		getRoutinePeriodsUseCase,
 	)
 
+	progressHandler := handler.NewProgressHandler(
+		getProgressLogsUseCase,
+		getProgressLogByIDUseCase,
+		createProgressLogUseCase,
+		deleteProgressLogUseCase,
+		uploadProgressPhotoUseCase,
+		deleteProgressPhotoUseCase,
+	)
+
 	// Router
-	router := httpAdapter.NewRouter(authHandler, exerciseHandler, customerHandler, templateHandler, routineHandler, jwtProvider)
+	router := httpAdapter.NewRouter(authHandler, exerciseHandler, customerHandler, templateHandler, routineHandler, progressHandler, jwtProvider)
 
 	addr := fmt.Sprintf(":%s", cfg.Port)
 	logger.Info.Printf("Server starting on %s (env: %s)", addr, cfg.Env)

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"kochappi/internal/domain/entity"
+	"kochappi/internal/domain/value_object"
 )
 
 type ProgressPhotoModel struct {
@@ -23,7 +24,7 @@ func (m *ProgressPhotoModel) ToDomain() *entity.ProgressPhoto {
 	return &entity.ProgressPhoto{
 		ID:                    m.ID,
 		URL:                   m.URL,
-		PictureType:           m.PictureType,
+		PictureType:           value_object.PictureType(m.PictureType),
 		LogCustomerProgressID: m.LogCustomerProgressID,
 		CreatedAt:             m.CreatedAt,
 		UpdatedAt:             m.UpdatedAt,
@@ -34,7 +35,7 @@ func ProgressPhotoModelFromDomain(p *entity.ProgressPhoto) *ProgressPhotoModel {
 	return &ProgressPhotoModel{
 		ID:                    p.ID,
 		URL:                   p.URL,
-		PictureType:           p.PictureType,
+		PictureType:           p.PictureType.String(),
 		LogCustomerProgressID: p.LogCustomerProgressID,
 		CreatedAt:             p.CreatedAt,
 		UpdatedAt:             p.UpdatedAt,

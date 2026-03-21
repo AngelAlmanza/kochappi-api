@@ -1,17 +1,21 @@
 package entity
 
-import "time"
+import (
+	"time"
+
+	"kochappi/internal/domain/value_object"
+)
 
 type ProgressPhoto struct {
 	ID                    int
 	URL                   string
-	PictureType           string
+	PictureType           value_object.PictureType
 	LogCustomerProgressID int
 	CreatedAt             time.Time
 	UpdatedAt             time.Time
 }
 
-func NewProgressPhoto(url, pictureType string, logCustomerProgressID int) *ProgressPhoto {
+func NewProgressPhoto(url string, pictureType value_object.PictureType, logCustomerProgressID int) *ProgressPhoto {
 	now := time.Now()
 	return &ProgressPhoto{
 		URL:                   url,

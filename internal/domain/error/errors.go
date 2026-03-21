@@ -255,3 +255,97 @@ func (e *ActiveRoutineExistsError) Code() string {
 func (e *ActiveRoutineExistsError) IsUserError() bool {
 	return true
 }
+
+type ProgressLogNotFoundError struct {
+	ID int
+}
+
+func (e *ProgressLogNotFoundError) Error() string {
+	return fmt.Sprintf("progress log %d not found", e.ID)
+}
+
+func (e *ProgressLogNotFoundError) Code() string {
+	return "PROGRESS_LOG_NOT_FOUND"
+}
+
+func (e *ProgressLogNotFoundError) IsUserError() bool {
+	return true
+}
+
+type ProgressPhotoNotFoundError struct {
+	ID int
+}
+
+func (e *ProgressPhotoNotFoundError) Error() string {
+	return fmt.Sprintf("progress photo %d not found", e.ID)
+}
+
+func (e *ProgressPhotoNotFoundError) Code() string {
+	return "PROGRESS_PHOTO_NOT_FOUND"
+}
+
+func (e *ProgressPhotoNotFoundError) IsUserError() bool {
+	return true
+}
+
+type InvalidCheckDateError struct {
+	CheckDate string
+}
+
+func (e *InvalidCheckDateError) Error() string {
+	return fmt.Sprintf("invalid check date: %s", e.CheckDate)
+}
+
+func (e *InvalidCheckDateError) Code() string {
+	return "INVALID_CHECK_DATE"
+}
+
+func (e *InvalidCheckDateError) IsUserError() bool {
+	return true
+}
+
+type InvalidWeightError struct{}
+
+func (e *InvalidWeightError) Error() string {
+	return "weight must be greater than 0"
+}
+
+func (e *InvalidWeightError) Code() string {
+	return "INVALID_WEIGHT"
+}
+
+func (e *InvalidWeightError) IsUserError() bool {
+	return true
+}
+
+type InvalidPictureTypeError struct {
+	PictureType string
+}
+
+func (e *InvalidPictureTypeError) Error() string {
+	return fmt.Sprintf("invalid picture type: %s", e.PictureType)
+}
+
+func (e *InvalidPictureTypeError) Code() string {
+	return "INVALID_PICTURE_TYPE"
+}
+
+func (e *InvalidPictureTypeError) IsUserError() bool {
+	return true
+}
+
+type FileUploadError struct {
+	Message string
+}
+
+func (e *FileUploadError) Error() string {
+	return fmt.Sprintf("file upload error: %s", e.Message)
+}
+
+func (e *FileUploadError) Code() string {
+	return "FILE_UPLOAD_ERROR"
+}
+
+func (e *FileUploadError) IsUserError() bool {
+	return false
+}
