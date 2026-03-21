@@ -15,6 +15,7 @@ func NewRouter(
 	exerciseHandler *handler.ExerciseHandler,
 	customerHandler *handler.CustomerHandler,
 	templateHandler *handler.TemplateHandler,
+	routineHandler *handler.RoutineHandler,
 	tokenProvider port.TokenProvider,
 ) *gin.Engine {
 	router := gin.Default()
@@ -59,6 +60,19 @@ func NewRouter(
 				templatesGroup.DELETE("/:id", templateHandler.DeleteTemplate)
 				templatesGroup.POST("/:id/details", templateHandler.AddTemplateDetail)
 				templatesGroup.DELETE("/:id/details/:detailId", templateHandler.RemoveTemplateDetail)
+			}
+
+			routinesGroup := protected.Group("/routines")
+			{
+				routinesGroup.GET("", routineHandler.GetRoutines)
+				routinesGroup.GET("/:id", routineHandler.GetRoutineByID)
+				routinesGroup.POST("", routineHandler.CreateRoutine)
+				routinesGroup.PUT("/:id", routineHandler.UpdateRoutine)
+				routinesGroup.POST("/:id/activate", routineHandler.ActivateRoutine)
+				routinesGroup.POST("/:id/deactivate", routineHandler.DeactivateRoutine)
+				routinesGroup.POST("/:id/details", routineHandler.AddRoutineDetail)
+				routinesGroup.DELETE("/:id/details/:detailId", routineHandler.RemoveRoutineDetail)
+				routinesGroup.GET("/:id/periods", routineHandler.GetRoutinePeriods)
 			}
 
 			exercisesGroup := protected.Group("/exercises")

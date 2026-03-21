@@ -207,3 +207,51 @@ func (e *CustomerAlreadyExistsError) Code() string {
 func (e *CustomerAlreadyExistsError) IsUserError() bool {
 	return true
 }
+
+type RoutineNotFoundError struct {
+	ID int
+}
+
+func (e *RoutineNotFoundError) Error() string {
+	return fmt.Sprintf("routine %d not found", e.ID)
+}
+
+func (e *RoutineNotFoundError) Code() string {
+	return "ROUTINE_NOT_FOUND"
+}
+
+func (e *RoutineNotFoundError) IsUserError() bool {
+	return true
+}
+
+type RoutineDetailNotFoundError struct {
+	ID int
+}
+
+func (e *RoutineDetailNotFoundError) Error() string {
+	return fmt.Sprintf("routine detail %d not found", e.ID)
+}
+
+func (e *RoutineDetailNotFoundError) Code() string {
+	return "ROUTINE_DETAIL_NOT_FOUND"
+}
+
+func (e *RoutineDetailNotFoundError) IsUserError() bool {
+	return true
+}
+
+type ActiveRoutineExistsError struct {
+	CustomerID int
+}
+
+func (e *ActiveRoutineExistsError) Error() string {
+	return fmt.Sprintf("customer %d already has an active routine", e.CustomerID)
+}
+
+func (e *ActiveRoutineExistsError) Code() string {
+	return "ACTIVE_ROUTINE_EXISTS"
+}
+
+func (e *ActiveRoutineExistsError) IsUserError() bool {
+	return true
+}

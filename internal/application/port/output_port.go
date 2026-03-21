@@ -67,6 +67,33 @@ type TemplateDetailRepository interface {
 	DeleteByID(ctx context.Context, id int) error
 }
 
+// Routines
+
+type RoutineRepository interface {
+	GetAll(ctx context.Context) ([]entity.Routine, error)
+	GetByID(ctx context.Context, id int) (*entity.Routine, error)
+	GetByCustomerID(ctx context.Context, customerID int) ([]entity.Routine, error)
+	GetActiveByCustomerID(ctx context.Context, customerID int) (*entity.Routine, error)
+	Create(ctx context.Context, routine *entity.Routine) error
+	Update(ctx context.Context, routine *entity.Routine) error
+	GetAllActive(ctx context.Context) ([]entity.Routine, error)
+}
+
+type RoutineDetailRepository interface {
+	GetByRoutineID(ctx context.Context, routineID int) ([]entity.RoutineDetail, error)
+	GetByID(ctx context.Context, id int) (*entity.RoutineDetail, error)
+	Create(ctx context.Context, detail *entity.RoutineDetail) error
+	CreateBulk(ctx context.Context, details []*entity.RoutineDetail) error
+	DeleteByID(ctx context.Context, id int) error
+}
+
+type RoutinePeriodRepository interface {
+	GetByRoutineID(ctx context.Context, routineID int) ([]entity.RoutinePeriod, error)
+	GetOngoingByRoutineID(ctx context.Context, routineID int) (*entity.RoutinePeriod, error)
+	Create(ctx context.Context, period *entity.RoutinePeriod) error
+	Update(ctx context.Context, period *entity.RoutinePeriod) error
+}
+
 // Exercises
 
 type ExerciseRepository interface {

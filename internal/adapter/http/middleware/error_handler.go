@@ -64,6 +64,12 @@ func mapDomainErrorToHTTPStatus(err domainerror.DomainError) int {
 		return http.StatusUnprocessableEntity
 	case "INVALID_BIRTHDATE":
 		return http.StatusBadRequest
+	case "ROUTINE_NOT_FOUND":
+		return http.StatusNotFound
+	case "ROUTINE_DETAIL_NOT_FOUND":
+		return http.StatusNotFound
+	case "ACTIVE_ROUTINE_EXISTS":
+		return http.StatusConflict
 	default:
 		return http.StatusInternalServerError
 	}

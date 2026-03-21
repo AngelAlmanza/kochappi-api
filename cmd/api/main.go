@@ -12,6 +12,7 @@ import (
 	"kochappi/internal/application/service/auth"
 	"kochappi/internal/application/service/customers"
 	"kochappi/internal/application/service/exercises"
+	"kochappi/internal/application/service/routines"
 	"kochappi/internal/application/service/templates"
 	"kochappi/internal/shared/logger"
 
@@ -58,6 +59,9 @@ func main() {
 	customerRepo := postgres.NewCustomerRepository(db)
 	templateRepo := postgres.NewPostgresTemplateRepository(db)
 	templateDetailRepo := postgres.NewPostgresTemplateDetailRepository(db)
+	routineRepo := postgres.NewPostgresRoutineRepository(db)
+	routineDetailRepo := postgres.NewPostgresRoutineDetailRepository(db)
+	routinePeriodRepo := postgres.NewPostgresRoutinePeriodRepository(db)
 
 	// Use Cases
 	registerUseCase := auth.NewRegisterUseCase(userRepo, passwordHasher, jwtProvider, refreshTokenRepo)
@@ -79,6 +83,16 @@ func main() {
 	deleteTemplateUseCase := templates.NewDeleteTemplateUseCase(templateRepo)
 	addTemplateDetailUseCase := templates.NewAddTemplateDetailUseCase(templateRepo, templateDetailRepo, exerciseRepo)
 	removeTemplateDetailUseCase := templates.NewRemoveTemplateDetailUseCase(templateDetailRepo)
+
+	getRoutinesUseCase := routines.NewGetRoutinesUseCase(routineRepo)
+	getRoutineByIDUseCase := routines.NewGetRoutineByIDUseCase(routineRepo, routineDetailRepo)
+	createRoutineUseCase := routines.NewCreateRoutineUseCase(routineRepo, routineDetailRepo, routinePeriodRepo, customerRepo, templateRepo, exerciseRepo)
+	updateRoutineUseCase := routines.NewUpdateRoutineUseCase(routineRepo)
+	activateRoutineUseCase := routines.NewActivateRoutineUseCase(routineRepo, routinePeriodRepo)
+	deactivateRoutineUseCase := routines.NewDeactivateRoutineUseCase(routineRepo, routinePeriodRepo)
+	addRoutineDetailUseCase := routines.NewAddRoutineDetailUseCase(routineRepo, routineDetailRepo, exerciseRepo)
+	removeRoutineDetailUseCase := routines.NewRemoveRoutineDetailUseCase(routineDetailRepo)
+	getRoutinePeriodsUseCase := routines.NewGetRoutinePeriodsUseCase(routineRepo, routinePeriodRepo)
 
 	getCustomersUseCase := customers.NewGetCustomersUseCase(customerRepo)
 	getCustomerByIDUseCase := customers.NewGetCustomerByIDUseCase(customerRepo)
@@ -118,8 +132,20 @@ func main() {
 		removeTemplateDetailUseCase,
 	)
 
+	routineHandler := handler.NewRoutineHandler(
+		getRoutinesUseCase,
+		getRoutineByIDUseCase,
+		createRoutineUseCase,
+		updateRoutineUseCase,
+		activateRoutineUseCase,
+		deactivateRoutineUseCase,
+		addRoutineDetailUseCase,
+		removeRoutineDetailUseCase,
+		getRoutinePeriodsUseCase,
+	)
+
 	// Router
-	router := httpAdapter.NewRouter(authHandler, exerciseHandler, customerHandler, templateHandler, jwtProvider)
+	router := httpAdapter.NewRouter(authHandler, exerciseHandler, customerHandler, templateHandler, routineHandler, jwtProvider)
 
 	addr := fmt.Sprintf(":%s", cfg.Port)
 	logger.Info.Printf("Server starting on %s (env: %s)", addr, cfg.Env)
