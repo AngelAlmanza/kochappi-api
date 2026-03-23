@@ -490,6 +490,321 @@ const docTemplate = `{
                 }
             }
         },
+        "/customers/{id}/log_customer_progress": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Returns all progress logs for a given customer",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Progress"
+                ],
+                "summary": "List progress logs for a customer",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Customer ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.ProgressLogResponse"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Creates a new progress log for a customer with check date and weight",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Progress"
+                ],
+                "summary": "Create a progress log",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Customer ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Progress log data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateProgressLogRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProgressLogResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/customers/{id}/log_customer_progress/{logId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Returns a single progress log with its associated photos",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Progress"
+                ],
+                "summary": "Get a progress log with photos",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Customer ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Progress Log ID",
+                        "name": "logId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProgressLogWithPhotosResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Deletes a progress log and all its associated photos and files",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Progress"
+                ],
+                "summary": "Delete a progress log",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Customer ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Progress Log ID",
+                        "name": "logId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/customers/{id}/log_customer_progress/{logId}/photos": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Uploads a photo for a progress log (multipart form: file + pictureType)",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Progress"
+                ],
+                "summary": "Upload a progress photo",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Customer ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Progress Log ID",
+                        "name": "logId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Photo file",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Picture type (front, side, back)",
+                        "name": "pictureType",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProgressPhotoResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/customers/{id}/log_customer_progress/{logId}/photos/{photoId}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Deletes a single photo from a progress log",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Progress"
+                ],
+                "summary": "Delete a progress photo",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Customer ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Progress Log ID",
+                        "name": "logId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Photo ID",
+                        "name": "photoId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/exercises": {
             "get": {
                 "security": [
@@ -688,6 +1003,430 @@ const docTemplate = `{
                 "responses": {
                     "204": {
                         "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/routines": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Returns a list of routines, optionally filtered by customer ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Routines"
+                ],
+                "summary": "List routines",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Customer ID",
+                        "name": "customerId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.RoutineResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Creates a new routine, optionally including exercise details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Routines"
+                ],
+                "summary": "Create a new routine",
+                "parameters": [
+                    {
+                        "description": "Routine data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateRoutineRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.RoutineWithDetailsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/routines/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Returns a routine with all its details",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Routines"
+                ],
+                "summary": "Get a routine by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Routine ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.RoutineWithDetailsResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Updates the name of a routine",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Routines"
+                ],
+                "summary": "Update a routine",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Routine ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Routine data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateRoutineRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.RoutineResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/routines/{id}/activate": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Activates a routine and creates a new period",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Routines"
+                ],
+                "summary": "Activate a routine",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Routine ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.RoutineResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/routines/{id}/deactivate": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Deactivates a routine and closes the ongoing period",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Routines"
+                ],
+                "summary": "Deactivate a routine",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Routine ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.RoutineResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/routines/{id}/details": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Adds a new exercise detail to an existing routine",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Routines"
+                ],
+                "summary": "Add a detail to a routine",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Routine ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Detail data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.AddRoutineDetailRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.RoutineDetailResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/routines/{id}/details/{detailId}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Removes a specific detail from a routine",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Routines"
+                ],
+                "summary": "Remove a detail from a routine",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Routine ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Detail ID",
+                        "name": "detailId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/routines/{id}/periods": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Returns all periods for a routine",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Routines"
+                ],
+                "summary": "Get routine periods",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Routine ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.RoutinePeriodResponse"
+                            }
+                        }
                     },
                     "404": {
                         "description": "Not Found",
@@ -1013,9 +1752,416 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/workout-sessions": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Returns workout sessions for a routine, optionally filtered by status or date range",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workout Sessions"
+                ],
+                "summary": "List workout sessions",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Routine ID",
+                        "name": "routineId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by status (pending, in_progress, completed, skipped)",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter from date (YYYY-MM-DD)",
+                        "name": "from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter to date (YYYY-MM-DD)",
+                        "name": "to",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.WorkoutSessionResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/workout-sessions/generate": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Manually triggers daily session generation for all active routines",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workout Sessions"
+                ],
+                "summary": "Generate daily workout sessions",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GenerateDailySessionsResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/workout-sessions/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Returns a workout session with its exercise logs",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workout Sessions"
+                ],
+                "summary": "Get a workout session by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Workout Session ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.WorkoutSessionWithLogsResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/workout-sessions/{id}/logs": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Creates an exercise log for an in_progress workout session",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workout Sessions"
+                ],
+                "summary": "Log an exercise set",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Workout Session ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Exercise log data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateExerciseLogRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ExerciseLogResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/workout-sessions/{id}/logs/{logId}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Updates an existing exercise log",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workout Sessions"
+                ],
+                "summary": "Update an exercise log",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Workout Session ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Exercise Log ID",
+                        "name": "logId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated exercise log data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateExerciseLogRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ExerciseLogResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Deletes an exercise log",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workout Sessions"
+                ],
+                "summary": "Delete an exercise log",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Workout Session ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Exercise Log ID",
+                        "name": "logId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/workout-sessions/{id}/status": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Transitions a workout session to a new status (in_progress, completed, skipped)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Workout Sessions"
+                ],
+                "summary": "Update workout session status",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Workout Session ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "New status",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateWorkoutSessionStatusRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.WorkoutSessionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "dto.AddRoutineDetailRequest": {
+            "type": "object",
+            "required": [
+                "dayOfWeek",
+                "displayOrder",
+                "exerciseId",
+                "reps",
+                "sets"
+            ],
+            "properties": {
+                "dayOfWeek": {
+                    "type": "integer",
+                    "maximum": 6,
+                    "minimum": 0,
+                    "example": 1
+                },
+                "displayOrder": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "exerciseId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "reps": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "sets": {
+                    "type": "integer",
+                    "example": 3
+                }
+            }
+        },
         "dto.AddTemplateDetailRequest": {
             "type": "object",
             "required": [
@@ -1088,6 +2234,40 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.CreateExerciseLogRequest": {
+            "type": "object",
+            "required": [
+                "repsDone",
+                "routineDetailId",
+                "setNumber",
+                "weight"
+            ],
+            "properties": {
+                "notes": {
+                    "type": "string",
+                    "example": "Felt strong"
+                },
+                "repsDone": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "example": 10
+                },
+                "routineDetailId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "setNumber": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "example": 1
+                },
+                "weight": {
+                    "type": "number",
+                    "minimum": 0,
+                    "example": 50
+                }
+            }
+        },
         "dto.CreateExerciseRequest": {
             "type": "object",
             "required": [
@@ -1101,6 +2281,88 @@ const docTemplate = `{
                 "videoUrl": {
                     "type": "string",
                     "example": "https://example.com/squat.mp4"
+                }
+            }
+        },
+        "dto.CreateProgressLogRequest": {
+            "type": "object",
+            "required": [
+                "checkDate",
+                "weight"
+            ],
+            "properties": {
+                "checkDate": {
+                    "type": "string",
+                    "example": "2024-01-15"
+                },
+                "weight": {
+                    "type": "integer",
+                    "example": 75
+                }
+            }
+        },
+        "dto.CreateRoutineDetailRequest": {
+            "type": "object",
+            "required": [
+                "dayOfWeek",
+                "displayOrder",
+                "exerciseId",
+                "reps",
+                "sets"
+            ],
+            "properties": {
+                "dayOfWeek": {
+                    "type": "integer",
+                    "maximum": 6,
+                    "minimum": 0,
+                    "example": 1
+                },
+                "displayOrder": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "exerciseId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "reps": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "sets": {
+                    "type": "integer",
+                    "example": 3
+                }
+            }
+        },
+        "dto.CreateRoutineRequest": {
+            "type": "object",
+            "required": [
+                "customerId",
+                "name"
+            ],
+            "properties": {
+                "customerId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "details": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.CreateRoutineDetailRequest"
+                    }
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "name": {
+                    "type": "string",
+                    "example": "My Routine"
+                },
+                "templateId": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
@@ -1190,6 +2452,39 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.ExerciseLogResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "notes": {
+                    "type": "string",
+                    "example": "Felt strong"
+                },
+                "repsDone": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "routineDetailId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "setNumber": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "weight": {
+                    "type": "number",
+                    "example": 50
+                },
+                "workoutSessionId": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
         "dto.ExerciseResponse": {
             "type": "object",
             "properties": {
@@ -1216,6 +2511,15 @@ const docTemplate = `{
                 "email": {
                     "type": "string",
                     "example": "john@example.com"
+                }
+            }
+        },
+        "dto.GenerateDailySessionsResponse": {
+            "type": "object",
+            "properties": {
+                "sessionsCreated": {
+                    "type": "integer",
+                    "example": 3
                 }
             }
         },
@@ -1255,6 +2559,75 @@ const docTemplate = `{
                 "message": {
                     "type": "string",
                     "example": "Operation completed successfully"
+                }
+            }
+        },
+        "dto.ProgressLogResponse": {
+            "type": "object",
+            "properties": {
+                "checkDate": {
+                    "type": "string",
+                    "example": "2024-01-15"
+                },
+                "customerId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "weight": {
+                    "type": "integer",
+                    "example": 75
+                }
+            }
+        },
+        "dto.ProgressLogWithPhotosResponse": {
+            "type": "object",
+            "properties": {
+                "checkDate": {
+                    "type": "string",
+                    "example": "2024-01-15"
+                },
+                "customerId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "photos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.ProgressPhotoResponse"
+                    }
+                },
+                "weight": {
+                    "type": "integer",
+                    "example": 75
+                }
+            }
+        },
+        "dto.ProgressPhotoResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "logId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "pictureType": {
+                    "type": "string",
+                    "example": "front"
+                },
+                "url": {
+                    "type": "string",
+                    "example": "/uploads/progress_1_abc.jpg"
                 }
             }
         },
@@ -1324,6 +2697,112 @@ const docTemplate = `{
                 "otp_code": {
                     "type": "string",
                     "example": "123456"
+                }
+            }
+        },
+        "dto.RoutineDetailResponse": {
+            "type": "object",
+            "properties": {
+                "dayOfWeek": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "displayOrder": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "exerciseId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "reps": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "sets": {
+                    "type": "integer",
+                    "example": 3
+                }
+            }
+        },
+        "dto.RoutinePeriodResponse": {
+            "type": "object",
+            "properties": {
+                "endedAt": {
+                    "type": "string",
+                    "example": "2026-02-01T00:00:00Z"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "routineId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "startedAt": {
+                    "type": "string",
+                    "example": "2026-01-01T00:00:00Z"
+                }
+            }
+        },
+        "dto.RoutineResponse": {
+            "type": "object",
+            "properties": {
+                "customerId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "name": {
+                    "type": "string",
+                    "example": "My Routine"
+                },
+                "templateId": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "dto.RoutineWithDetailsResponse": {
+            "type": "object",
+            "properties": {
+                "customerId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "details": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.RoutineDetailResponse"
+                    }
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "name": {
+                    "type": "string",
+                    "example": "My Routine"
+                },
+                "templateId": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
@@ -1427,6 +2906,35 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.UpdateExerciseLogRequest": {
+            "type": "object",
+            "required": [
+                "repsDone",
+                "setNumber",
+                "weight"
+            ],
+            "properties": {
+                "notes": {
+                    "type": "string",
+                    "example": "Felt strong"
+                },
+                "repsDone": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "example": 10
+                },
+                "setNumber": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "example": 1
+                },
+                "weight": {
+                    "type": "number",
+                    "minimum": 0,
+                    "example": 50
+                }
+            }
+        },
         "dto.UpdateExerciseRequest": {
             "type": "object",
             "required": [
@@ -1443,6 +2951,18 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.UpdateRoutineRequest": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "My Routine"
+                }
+            }
+        },
         "dto.UpdateTemplateRequest": {
             "type": "object",
             "required": [
@@ -1456,6 +2976,23 @@ const docTemplate = `{
                 "name": {
                     "type": "string",
                     "example": "Push/Pull/Legs"
+                }
+            }
+        },
+        "dto.UpdateWorkoutSessionStatusRequest": {
+            "type": "object",
+            "required": [
+                "status"
+            ],
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "in_progress",
+                        "completed",
+                        "skipped"
+                    ],
+                    "example": "in_progress"
                 }
             }
         },
@@ -1477,6 +3014,78 @@ const docTemplate = `{
                 "role": {
                     "type": "string",
                     "example": "client"
+                }
+            }
+        },
+        "dto.WorkoutSessionResponse": {
+            "type": "object",
+            "properties": {
+                "actualDate": {
+                    "type": "string",
+                    "example": "2026-01-15"
+                },
+                "finishedAt": {
+                    "type": "string",
+                    "example": "2026-01-15T11:00:00Z"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "routineId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "scheduledDay": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "startedAt": {
+                    "type": "string",
+                    "example": "2026-01-15T10:00:00Z"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "pending"
+                }
+            }
+        },
+        "dto.WorkoutSessionWithLogsResponse": {
+            "type": "object",
+            "properties": {
+                "actualDate": {
+                    "type": "string",
+                    "example": "2026-01-15"
+                },
+                "exerciseLogs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.ExerciseLogResponse"
+                    }
+                },
+                "finishedAt": {
+                    "type": "string",
+                    "example": "2026-01-15T11:00:00Z"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "routineId": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "scheduledDay": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "startedAt": {
+                    "type": "string",
+                    "example": "2026-01-15T10:00:00Z"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "pending"
                 }
             }
         }

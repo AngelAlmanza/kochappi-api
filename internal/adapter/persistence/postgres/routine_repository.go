@@ -3,10 +3,12 @@ package postgres
 import (
 	"context"
 	"errors"
+	"time"
 
 	"kochappi/internal/adapter/persistence/postgres/model"
 	"kochappi/internal/domain/entity"
 	domainerror "kochappi/internal/domain/error"
+	"kochappi/internal/shared/logger"
 
 	"gorm.io/gorm"
 )
@@ -86,6 +88,34 @@ func (r *PostgresRoutineRepository) Update(ctx context.Context, routine *entity.
 func (r *PostgresRoutineRepository) GetAllActive(ctx context.Context) ([]entity.Routine, error) {
 	var models []model.RoutineModel
 	if err := r.db.WithContext(ctx).Where("is_active = true").Find(&models).Error; err != nil {
+		return nil, err
+	}
+
+	routines := make([]entity.Routine, 0, len(models))
+	for _, m := range models {
+		routines = append(routines, *m.ToDomain())
+	}
+	return routines, nil
+}
+
+func (r *PostgresRoutineRepository) GetRoutinesToGenerateSessions(ctx context.Context, dayOfWeek int16, date time.Time) ([]entity.Routine, error) {
+	logger.Info.Printf("Get Routines to Generate Sessions for day: %d and date: %s", dayOfWeek, date)
+	var models []model.RoutineModel
+	err := r.db.WithContext(ctx).Raw(`
+		SELECT r.*
+		FROM routines r
+		JOIN routine_details rd ON r.id = rd.routine_id
+		WHERE r.is_active = true
+		AND rd.day_of_week = ?
+		AND NOT EXISTS (
+			SELECT 1
+			FROM workout_sessions ws
+			WHERE ws.routine_id = r.id
+			AND ws.actual_date = ?
+		)
+		GROUP BY r.id
+	`, dayOfWeek, date).Scan(&models).Error
+	if err != nil {
 		return nil, err
 	}
 

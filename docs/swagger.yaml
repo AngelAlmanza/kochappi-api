@@ -1,5 +1,31 @@
 basePath: /api/v1
 definitions:
+  dto.AddRoutineDetailRequest:
+    properties:
+      dayOfWeek:
+        example: 1
+        maximum: 6
+        minimum: 0
+        type: integer
+      displayOrder:
+        example: 1
+        type: integer
+      exerciseId:
+        example: 1
+        type: integer
+      reps:
+        example: 10
+        type: integer
+      sets:
+        example: 3
+        type: integer
+    required:
+    - dayOfWeek
+    - displayOrder
+    - exerciseId
+    - reps
+    - sets
+    type: object
   dto.AddTemplateDetailRequest:
     properties:
       dayOfWeek:
@@ -53,6 +79,32 @@ definitions:
     - name
     - userId
     type: object
+  dto.CreateExerciseLogRequest:
+    properties:
+      notes:
+        example: Felt strong
+        type: string
+      repsDone:
+        example: 10
+        minimum: 0
+        type: integer
+      routineDetailId:
+        example: 1
+        type: integer
+      setNumber:
+        example: 1
+        minimum: 1
+        type: integer
+      weight:
+        example: 50
+        minimum: 0
+        type: number
+    required:
+    - repsDone
+    - routineDetailId
+    - setNumber
+    - weight
+    type: object
   dto.CreateExerciseRequest:
     properties:
       name:
@@ -62,6 +114,66 @@ definitions:
         example: https://example.com/squat.mp4
         type: string
     required:
+    - name
+    type: object
+  dto.CreateProgressLogRequest:
+    properties:
+      checkDate:
+        example: "2024-01-15"
+        type: string
+      weight:
+        example: 75
+        type: integer
+    required:
+    - checkDate
+    - weight
+    type: object
+  dto.CreateRoutineDetailRequest:
+    properties:
+      dayOfWeek:
+        example: 1
+        maximum: 6
+        minimum: 0
+        type: integer
+      displayOrder:
+        example: 1
+        type: integer
+      exerciseId:
+        example: 1
+        type: integer
+      reps:
+        example: 10
+        type: integer
+      sets:
+        example: 3
+        type: integer
+    required:
+    - dayOfWeek
+    - displayOrder
+    - exerciseId
+    - reps
+    - sets
+    type: object
+  dto.CreateRoutineRequest:
+    properties:
+      customerId:
+        example: 1
+        type: integer
+      details:
+        items:
+          $ref: '#/definitions/dto.CreateRoutineDetailRequest'
+        type: array
+      isActive:
+        example: false
+        type: boolean
+      name:
+        example: My Routine
+        type: string
+      templateId:
+        example: 1
+        type: integer
+    required:
+    - customerId
     - name
     type: object
   dto.CreateTemplateDetailRequest:
@@ -126,6 +238,30 @@ definitions:
         example: descriptive error message
         type: string
     type: object
+  dto.ExerciseLogResponse:
+    properties:
+      id:
+        example: 1
+        type: integer
+      notes:
+        example: Felt strong
+        type: string
+      repsDone:
+        example: 10
+        type: integer
+      routineDetailId:
+        example: 1
+        type: integer
+      setNumber:
+        example: 1
+        type: integer
+      weight:
+        example: 50
+        type: number
+      workoutSessionId:
+        example: 1
+        type: integer
+    type: object
   dto.ExerciseResponse:
     properties:
       id:
@@ -145,6 +281,12 @@ definitions:
         type: string
     required:
     - email
+    type: object
+  dto.GenerateDailySessionsResponse:
+    properties:
+      sessionsCreated:
+        example: 3
+        type: integer
     type: object
   dto.LoginRequest:
     properties:
@@ -171,6 +313,55 @@ definitions:
     properties:
       message:
         example: Operation completed successfully
+        type: string
+    type: object
+  dto.ProgressLogResponse:
+    properties:
+      checkDate:
+        example: "2024-01-15"
+        type: string
+      customerId:
+        example: 1
+        type: integer
+      id:
+        example: 1
+        type: integer
+      weight:
+        example: 75
+        type: integer
+    type: object
+  dto.ProgressLogWithPhotosResponse:
+    properties:
+      checkDate:
+        example: "2024-01-15"
+        type: string
+      customerId:
+        example: 1
+        type: integer
+      id:
+        example: 1
+        type: integer
+      photos:
+        items:
+          $ref: '#/definitions/dto.ProgressPhotoResponse'
+        type: array
+      weight:
+        example: 75
+        type: integer
+    type: object
+  dto.ProgressPhotoResponse:
+    properties:
+      id:
+        example: 1
+        type: integer
+      logId:
+        example: 1
+        type: integer
+      pictureType:
+        example: front
+        type: string
+      url:
+        example: /uploads/progress_1_abc.jpg
         type: string
     type: object
   dto.RefreshTokenRequest:
@@ -223,6 +414,82 @@ definitions:
     - email
     - new_password
     - otp_code
+    type: object
+  dto.RoutineDetailResponse:
+    properties:
+      dayOfWeek:
+        example: 1
+        type: integer
+      displayOrder:
+        example: 1
+        type: integer
+      exerciseId:
+        example: 1
+        type: integer
+      id:
+        example: 1
+        type: integer
+      reps:
+        example: 10
+        type: integer
+      sets:
+        example: 3
+        type: integer
+    type: object
+  dto.RoutinePeriodResponse:
+    properties:
+      endedAt:
+        example: "2026-02-01T00:00:00Z"
+        type: string
+      id:
+        example: 1
+        type: integer
+      routineId:
+        example: 1
+        type: integer
+      startedAt:
+        example: "2026-01-01T00:00:00Z"
+        type: string
+    type: object
+  dto.RoutineResponse:
+    properties:
+      customerId:
+        example: 1
+        type: integer
+      id:
+        example: 1
+        type: integer
+      isActive:
+        example: false
+        type: boolean
+      name:
+        example: My Routine
+        type: string
+      templateId:
+        example: 1
+        type: integer
+    type: object
+  dto.RoutineWithDetailsResponse:
+    properties:
+      customerId:
+        example: 1
+        type: integer
+      details:
+        items:
+          $ref: '#/definitions/dto.RoutineDetailResponse'
+        type: array
+      id:
+        example: 1
+        type: integer
+      isActive:
+        example: false
+        type: boolean
+      name:
+        example: My Routine
+        type: string
+      templateId:
+        example: 1
+        type: integer
     type: object
   dto.TemplateDetailResponse:
     properties:
@@ -295,6 +562,28 @@ definitions:
     - birthdate
     - name
     type: object
+  dto.UpdateExerciseLogRequest:
+    properties:
+      notes:
+        example: Felt strong
+        type: string
+      repsDone:
+        example: 10
+        minimum: 0
+        type: integer
+      setNumber:
+        example: 1
+        minimum: 1
+        type: integer
+      weight:
+        example: 50
+        minimum: 0
+        type: number
+    required:
+    - repsDone
+    - setNumber
+    - weight
+    type: object
   dto.UpdateExerciseRequest:
     properties:
       name:
@@ -302,6 +591,14 @@ definitions:
         type: string
       videoUrl:
         example: https://example.com/squat.mp4
+        type: string
+    required:
+    - name
+    type: object
+  dto.UpdateRoutineRequest:
+    properties:
+      name:
+        example: My Routine
         type: string
     required:
     - name
@@ -317,6 +614,18 @@ definitions:
     required:
     - name
     type: object
+  dto.UpdateWorkoutSessionStatusRequest:
+    properties:
+      status:
+        enum:
+        - in_progress
+        - completed
+        - skipped
+        example: in_progress
+        type: string
+    required:
+    - status
+    type: object
   dto.UserResponse:
     properties:
       email:
@@ -330,6 +639,58 @@ definitions:
         type: string
       role:
         example: client
+        type: string
+    type: object
+  dto.WorkoutSessionResponse:
+    properties:
+      actualDate:
+        example: "2026-01-15"
+        type: string
+      finishedAt:
+        example: "2026-01-15T11:00:00Z"
+        type: string
+      id:
+        example: 1
+        type: integer
+      routineId:
+        example: 1
+        type: integer
+      scheduledDay:
+        example: 1
+        type: integer
+      startedAt:
+        example: "2026-01-15T10:00:00Z"
+        type: string
+      status:
+        example: pending
+        type: string
+    type: object
+  dto.WorkoutSessionWithLogsResponse:
+    properties:
+      actualDate:
+        example: "2026-01-15"
+        type: string
+      exerciseLogs:
+        items:
+          $ref: '#/definitions/dto.ExerciseLogResponse'
+        type: array
+      finishedAt:
+        example: "2026-01-15T11:00:00Z"
+        type: string
+      id:
+        example: 1
+        type: integer
+      routineId:
+        example: 1
+        type: integer
+      scheduledDay:
+        example: 1
+        type: integer
+      startedAt:
+        example: "2026-01-15T10:00:00Z"
+        type: string
+      status:
+        example: pending
         type: string
     type: object
 host: localhost:8081
@@ -645,6 +1006,209 @@ paths:
       summary: Update a customer
       tags:
       - Customers
+  /customers/{id}/log_customer_progress:
+    get:
+      description: Returns all progress logs for a given customer
+      parameters:
+      - description: Customer ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.ProgressLogResponse'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List progress logs for a customer
+      tags:
+      - Progress
+    post:
+      consumes:
+      - application/json
+      description: Creates a new progress log for a customer with check date and weight
+      parameters:
+      - description: Customer ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Progress log data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateProgressLogRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.ProgressLogResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create a progress log
+      tags:
+      - Progress
+  /customers/{id}/log_customer_progress/{logId}:
+    delete:
+      description: Deletes a progress log and all its associated photos and files
+      parameters:
+      - description: Customer ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Progress Log ID
+        in: path
+        name: logId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete a progress log
+      tags:
+      - Progress
+    get:
+      description: Returns a single progress log with its associated photos
+      parameters:
+      - description: Customer ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Progress Log ID
+        in: path
+        name: logId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ProgressLogWithPhotosResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get a progress log with photos
+      tags:
+      - Progress
+  /customers/{id}/log_customer_progress/{logId}/photos:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 'Uploads a photo for a progress log (multipart form: file + pictureType)'
+      parameters:
+      - description: Customer ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Progress Log ID
+        in: path
+        name: logId
+        required: true
+        type: integer
+      - description: Photo file
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: Picture type (front, side, back)
+        in: formData
+        name: pictureType
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.ProgressPhotoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Upload a progress photo
+      tags:
+      - Progress
+  /customers/{id}/log_customer_progress/{logId}/photos/{photoId}:
+    delete:
+      description: Deletes a single photo from a progress log
+      parameters:
+      - description: Customer ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Progress Log ID
+        in: path
+        name: logId
+        required: true
+        type: integer
+      - description: Photo ID
+        in: path
+        name: photoId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete a progress photo
+      tags:
+      - Progress
   /exercises:
     get:
       description: Returns a list of all exercises
@@ -776,6 +1340,274 @@ paths:
       summary: Update an exercise
       tags:
       - Exercises
+  /routines:
+    get:
+      description: Returns a list of routines, optionally filtered by customer ID
+      parameters:
+      - description: Customer ID
+        in: query
+        name: customerId
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.RoutineResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List routines
+      tags:
+      - Routines
+    post:
+      consumes:
+      - application/json
+      description: Creates a new routine, optionally including exercise details
+      parameters:
+      - description: Routine data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateRoutineRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.RoutineWithDetailsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create a new routine
+      tags:
+      - Routines
+  /routines/{id}:
+    get:
+      description: Returns a routine with all its details
+      parameters:
+      - description: Routine ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RoutineWithDetailsResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get a routine by ID
+      tags:
+      - Routines
+    put:
+      consumes:
+      - application/json
+      description: Updates the name of a routine
+      parameters:
+      - description: Routine ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Routine data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateRoutineRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RoutineResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update a routine
+      tags:
+      - Routines
+  /routines/{id}/activate:
+    post:
+      description: Activates a routine and creates a new period
+      parameters:
+      - description: Routine ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RoutineResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Activate a routine
+      tags:
+      - Routines
+  /routines/{id}/deactivate:
+    post:
+      description: Deactivates a routine and closes the ongoing period
+      parameters:
+      - description: Routine ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RoutineResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Deactivate a routine
+      tags:
+      - Routines
+  /routines/{id}/details:
+    post:
+      consumes:
+      - application/json
+      description: Adds a new exercise detail to an existing routine
+      parameters:
+      - description: Routine ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Detail data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AddRoutineDetailRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.RoutineDetailResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Add a detail to a routine
+      tags:
+      - Routines
+  /routines/{id}/details/{detailId}:
+    delete:
+      description: Removes a specific detail from a routine
+      parameters:
+      - description: Routine ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Detail ID
+        in: path
+        name: detailId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Remove a detail from a routine
+      tags:
+      - Routines
+  /routines/{id}/periods:
+    get:
+      description: Returns all periods for a routine
+      parameters:
+      - description: Routine ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.RoutinePeriodResponse'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get routine periods
+      tags:
+      - Routines
   /templates:
     get:
       description: Returns a list of all templates (without details)
@@ -978,6 +1810,246 @@ paths:
       summary: Remove a detail from a template
       tags:
       - Templates
+  /workout-sessions:
+    get:
+      description: Returns workout sessions for a routine, optionally filtered by
+        status or date range
+      parameters:
+      - description: Routine ID
+        in: query
+        name: routineId
+        required: true
+        type: integer
+      - description: Filter by status (pending, in_progress, completed, skipped)
+        in: query
+        name: status
+        type: string
+      - description: Filter from date (YYYY-MM-DD)
+        in: query
+        name: from
+        type: string
+      - description: Filter to date (YYYY-MM-DD)
+        in: query
+        name: to
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.WorkoutSessionResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List workout sessions
+      tags:
+      - Workout Sessions
+  /workout-sessions/{id}:
+    get:
+      description: Returns a workout session with its exercise logs
+      parameters:
+      - description: Workout Session ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.WorkoutSessionWithLogsResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get a workout session by ID
+      tags:
+      - Workout Sessions
+  /workout-sessions/{id}/logs:
+    post:
+      consumes:
+      - application/json
+      description: Creates an exercise log for an in_progress workout session
+      parameters:
+      - description: Workout Session ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Exercise log data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateExerciseLogRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.ExerciseLogResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Log an exercise set
+      tags:
+      - Workout Sessions
+  /workout-sessions/{id}/logs/{logId}:
+    delete:
+      description: Deletes an exercise log
+      parameters:
+      - description: Workout Session ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Exercise Log ID
+        in: path
+        name: logId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete an exercise log
+      tags:
+      - Workout Sessions
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing exercise log
+      parameters:
+      - description: Workout Session ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Exercise Log ID
+        in: path
+        name: logId
+        required: true
+        type: integer
+      - description: Updated exercise log data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateExerciseLogRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ExerciseLogResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update an exercise log
+      tags:
+      - Workout Sessions
+  /workout-sessions/{id}/status:
+    patch:
+      consumes:
+      - application/json
+      description: Transitions a workout session to a new status (in_progress, completed,
+        skipped)
+      parameters:
+      - description: Workout Session ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: New status
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateWorkoutSessionStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.WorkoutSessionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update workout session status
+      tags:
+      - Workout Sessions
+  /workout-sessions/generate:
+    post:
+      description: Manually triggers daily session generation for all active routines
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GenerateDailySessionsResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Generate daily workout sessions
+      tags:
+      - Workout Sessions
 securityDefinitions:
   BearerAuth:
     description: 'Enter your bearer token in the format: Bearer {token}'

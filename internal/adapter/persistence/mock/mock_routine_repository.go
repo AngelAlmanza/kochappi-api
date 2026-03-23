@@ -2,18 +2,20 @@ package mock
 
 import (
 	"context"
+	"time"
 
 	"kochappi/internal/domain/entity"
 )
 
 type MockRoutineRepository struct {
-	GetAllFn                func(ctx context.Context) ([]entity.Routine, error)
-	GetByIDFn              func(ctx context.Context, id int) (*entity.Routine, error)
-	GetByCustomerIDFn      func(ctx context.Context, customerID int) ([]entity.Routine, error)
-	GetActiveByCustomerIDFn func(ctx context.Context, customerID int) (*entity.Routine, error)
-	CreateFn               func(ctx context.Context, routine *entity.Routine) error
-	UpdateFn               func(ctx context.Context, routine *entity.Routine) error
-	GetAllActiveFn         func(ctx context.Context) ([]entity.Routine, error)
+	GetAllFn                          func(ctx context.Context) ([]entity.Routine, error)
+	GetByIDFn                         func(ctx context.Context, id int) (*entity.Routine, error)
+	GetByCustomerIDFn                 func(ctx context.Context, customerID int) ([]entity.Routine, error)
+	GetActiveByCustomerIDFn           func(ctx context.Context, customerID int) (*entity.Routine, error)
+	CreateFn                          func(ctx context.Context, routine *entity.Routine) error
+	UpdateFn                          func(ctx context.Context, routine *entity.Routine) error
+	GetAllActiveFn                    func(ctx context.Context) ([]entity.Routine, error)
+	GetRoutinesToGenerateSessionsFn   func(ctx context.Context, dayOfWeek int16, date time.Time) ([]entity.Routine, error)
 }
 
 func (r *MockRoutineRepository) GetAll(ctx context.Context) ([]entity.Routine, error) {
@@ -61,6 +63,13 @@ func (r *MockRoutineRepository) Update(ctx context.Context, routine *entity.Rout
 func (r *MockRoutineRepository) GetAllActive(ctx context.Context) ([]entity.Routine, error) {
 	if r.GetAllActiveFn != nil {
 		return r.GetAllActiveFn(ctx)
+	}
+	return nil, nil
+}
+
+func (r *MockRoutineRepository) GetRoutinesToGenerateSessions(ctx context.Context, dayOfWeek int16, date time.Time) ([]entity.Routine, error) {
+	if r.GetRoutinesToGenerateSessionsFn != nil {
+		return r.GetRoutinesToGenerateSessionsFn(ctx, dayOfWeek, date)
 	}
 	return nil, nil
 }

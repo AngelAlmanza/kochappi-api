@@ -82,6 +82,14 @@ func mapDomainErrorToHTTPStatus(err domainerror.DomainError) int {
 		return http.StatusBadRequest
 	case "FILE_UPLOAD_ERROR":
 		return http.StatusInternalServerError
+	case "WORKOUT_SESSION_NOT_FOUND":
+		return http.StatusNotFound
+	case "EXERCISE_LOG_NOT_FOUND":
+		return http.StatusNotFound
+	case "INVALID_SESSION_STATUS_TRANSITION":
+		return http.StatusUnprocessableEntity
+	case "SESSION_ALREADY_EXISTS":
+		return http.StatusConflict
 	default:
 		return http.StatusInternalServerError
 	}

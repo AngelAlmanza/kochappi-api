@@ -349,3 +349,69 @@ func (e *FileUploadError) Code() string {
 func (e *FileUploadError) IsUserError() bool {
 	return false
 }
+
+type WorkoutSessionNotFoundError struct {
+	ID int
+}
+
+func (e *WorkoutSessionNotFoundError) Error() string {
+	return fmt.Sprintf("workout session %d not found", e.ID)
+}
+
+func (e *WorkoutSessionNotFoundError) Code() string {
+	return "WORKOUT_SESSION_NOT_FOUND"
+}
+
+func (e *WorkoutSessionNotFoundError) IsUserError() bool {
+	return true
+}
+
+type LogExerciseSessionNotFoundError struct {
+	ID int
+}
+
+func (e *LogExerciseSessionNotFoundError) Error() string {
+	return fmt.Sprintf("exercise log %d not found", e.ID)
+}
+
+func (e *LogExerciseSessionNotFoundError) Code() string {
+	return "EXERCISE_LOG_NOT_FOUND"
+}
+
+func (e *LogExerciseSessionNotFoundError) IsUserError() bool {
+	return true
+}
+
+type InvalidSessionStatusTransitionError struct {
+	From string
+	To   string
+}
+
+func (e *InvalidSessionStatusTransitionError) Error() string {
+	return fmt.Sprintf("cannot transition session from %s to %s", e.From, e.To)
+}
+
+func (e *InvalidSessionStatusTransitionError) Code() string {
+	return "INVALID_SESSION_STATUS_TRANSITION"
+}
+
+func (e *InvalidSessionStatusTransitionError) IsUserError() bool {
+	return true
+}
+
+type SessionAlreadyExistsError struct {
+	RoutineID int
+	Date      string
+}
+
+func (e *SessionAlreadyExistsError) Error() string {
+	return fmt.Sprintf("session already exists for routine %d on %s", e.RoutineID, e.Date)
+}
+
+func (e *SessionAlreadyExistsError) Code() string {
+	return "SESSION_ALREADY_EXISTS"
+}
+
+func (e *SessionAlreadyExistsError) IsUserError() bool {
+	return true
+}

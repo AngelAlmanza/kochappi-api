@@ -17,6 +17,7 @@ func NewRouter(
 	templateHandler *handler.TemplateHandler,
 	routineHandler *handler.RoutineHandler,
 	progressHandler *handler.ProgressHandler,
+	workoutSessionHandler *handler.WorkoutSessionHandler,
 	tokenProvider port.TokenProvider,
 ) *gin.Engine {
 	router := gin.Default()
@@ -95,6 +96,17 @@ func NewRouter(
 				exercisesGroup.POST("", exerciseHandler.CreateExercise)
 				exercisesGroup.PUT("/:id", exerciseHandler.UpdateExercise)
 				exercisesGroup.DELETE("/:id", exerciseHandler.DeleteExercise)
+			}
+
+			sessionsGroup := protected.Group("/workout-sessions")
+			{
+				sessionsGroup.GET("", workoutSessionHandler.GetWorkoutSessions)
+				sessionsGroup.POST("/generate", workoutSessionHandler.GenerateDailySessions)
+				sessionsGroup.GET("/:id", workoutSessionHandler.GetWorkoutSessionByID)
+				sessionsGroup.PATCH("/:id/status", workoutSessionHandler.UpdateWorkoutSessionStatus)
+				sessionsGroup.POST("/:id/logs", workoutSessionHandler.CreateExerciseLog)
+				sessionsGroup.PUT("/:id/logs/:logId", workoutSessionHandler.UpdateExerciseLog)
+				sessionsGroup.DELETE("/:id/logs/:logId", workoutSessionHandler.DeleteExerciseLog)
 			}
 		}
 	}

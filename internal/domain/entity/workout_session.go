@@ -1,6 +1,11 @@
 package entity
 
-import "time"
+import (
+	"slices"
+	"time"
+
+	domainerror "kochappi/internal/domain/error"
+)
 
 type WorkoutStatus string
 
@@ -10,6 +15,11 @@ const (
 	WorkoutStatusCompleted  WorkoutStatus = "completed"
 	WorkoutStatusSkipped    WorkoutStatus = "skipped"
 )
+
+var validTransitions = map[WorkoutStatus][]WorkoutStatus{
+	WorkoutStatusPending:    {WorkoutStatusInProgress, WorkoutStatusSkipped},
+	WorkoutStatusInProgress: {WorkoutStatusCompleted, WorkoutStatusSkipped},
+}
 
 type WorkoutSession struct {
 	ID           int
@@ -35,21 +45,26 @@ func NewWorkoutSession(routineID int, scheduledDay int16, actualDate time.Time) 
 	}
 }
 
-func (ws *WorkoutSession) Start() {
-	now := time.Now()
-	ws.Status = WorkoutStatusInProgress
-	ws.StartedAt = &now
-	ws.UpdatedAt = now
+func (ws *WorkoutSession) TransitionTo(next WorkoutStatus) error {
+	allowed, ok := validTransitions[ws.Status]
+	if !ok {
+		return &domainerror.InvalidSessionStatusTransitionError{From: string(ws.Status), To: string(next)}
+	}
+	if slices.Contains(allowed, next) {
+		ws.applyTransition(next)
+		return nil
+	}
+	return &domainerror.InvalidSessionStatusTransitionError{From: string(ws.Status), To: string(next)}
 }
 
-func (ws *WorkoutSession) Complete() {
+func (ws *WorkoutSession) applyTransition(next WorkoutStatus) {
 	now := time.Now()
-	ws.Status = WorkoutStatusCompleted
-	ws.FinishedAt = &now
+	switch next {
+	case WorkoutStatusInProgress:
+		ws.StartedAt = &now
+	case WorkoutStatusCompleted:
+		ws.FinishedAt = &now
+	}
+	ws.Status = next
 	ws.UpdatedAt = now
-}
-
-func (ws *WorkoutSession) Skip() {
-	ws.Status = WorkoutStatusSkipped
-	ws.UpdatedAt = time.Now()
 }

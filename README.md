@@ -166,4 +166,3 @@ Este proyecto sigue las convenciones documentadas en:
 - [`docs/architecture/04_rules_conventions.md`](docs/architecture/04_rules_conventions.md) — Convenciones técnicas
 
 **Commit Format**: `type(scope): description` — ej: `feat(auth): add login endpoint`
-

@@ -3,6 +3,7 @@ package port
 import (
 	"context"
 	"io"
+	"time"
 
 	"kochappi/internal/domain/entity"
 )
@@ -79,6 +80,7 @@ type RoutineRepository interface {
 	Create(ctx context.Context, routine *entity.Routine) error
 	Update(ctx context.Context, routine *entity.Routine) error
 	GetAllActive(ctx context.Context) ([]entity.Routine, error)
+	GetRoutinesToGenerateSessions(ctx context.Context, dayOfWeek int16, date time.Time) ([]entity.Routine, error)
 }
 
 type RoutineDetailRepository interface {
@@ -122,6 +124,32 @@ type ProgressPhotoRepository interface {
 	Create(ctx context.Context, photo *entity.ProgressPhoto) error
 	Delete(ctx context.Context, id int) error
 	DeleteByLogID(ctx context.Context, logID int) error
+}
+
+// Workout Sessions
+
+type WorkoutSessionCriteria struct {
+	RoutineID *int
+	Status    *string
+	DateFrom  *time.Time
+	DateTo    *time.Time
+	Date      *time.Time
+}
+
+type WorkoutSessionRepository interface {
+	GetByID(ctx context.Context, id int) (*entity.WorkoutSession, error)
+	GetByCriteria(ctx context.Context, criteria WorkoutSessionCriteria) ([]entity.WorkoutSession, error)
+	Create(ctx context.Context, session *entity.WorkoutSession) error
+	CreateBulk(ctx context.Context, sessions []*entity.WorkoutSession) error
+	Update(ctx context.Context, session *entity.WorkoutSession) error
+}
+
+type LogExerciseSessionRepository interface {
+	GetByID(ctx context.Context, id int) (*entity.LogExerciseSession, error)
+	GetByWorkoutSessionID(ctx context.Context, workoutSessionID int) ([]entity.LogExerciseSession, error)
+	Create(ctx context.Context, log *entity.LogExerciseSession) error
+	Update(ctx context.Context, log *entity.LogExerciseSession) error
+	Delete(ctx context.Context, id int) error
 }
 
 // Storage

@@ -6,6 +6,7 @@ import (
 
 	authAdapter "kochappi/internal/adapter/auth"
 	"kochappi/internal/adapter/config"
+	cronAdapter "kochappi/internal/adapter/cron"
 	httpAdapter "kochappi/internal/adapter/http"
 	"kochappi/internal/adapter/http/handler"
 	"kochappi/internal/adapter/persistence/postgres"
@@ -15,6 +16,7 @@ import (
 	"kochappi/internal/application/service/exercises"
 	"kochappi/internal/application/service/progress"
 	"kochappi/internal/application/service/routines"
+	"kochappi/internal/application/service/sessions"
 	"kochappi/internal/application/service/templates"
 	"kochappi/internal/shared/logger"
 
@@ -67,6 +69,8 @@ func main() {
 	routinePeriodRepo := postgres.NewPostgresRoutinePeriodRepository(db)
 	logProgressRepo := postgres.NewLogCustomerProgressRepository(db)
 	progressPhotoRepo := postgres.NewProgressPhotoRepository(db)
+	workoutSessionRepo := postgres.NewPostgresWorkoutSessionRepository(db)
+	logExerciseSessionRepo := postgres.NewPostgresLogExerciseSessionRepository(db)
 
 	// Use Cases
 	registerUseCase := auth.NewRegisterUseCase(userRepo, passwordHasher, jwtProvider, refreshTokenRepo)
@@ -111,6 +115,14 @@ func main() {
 	deleteProgressLogUseCase := progress.NewDeleteProgressLogUseCase(customerRepo, logProgressRepo, progressPhotoRepo, fileStorage)
 	uploadProgressPhotoUseCase := progress.NewUploadProgressPhotoUseCase(customerRepo, logProgressRepo, progressPhotoRepo, fileStorage)
 	deleteProgressPhotoUseCase := progress.NewDeleteProgressPhotoUseCase(customerRepo, logProgressRepo, progressPhotoRepo, fileStorage)
+
+	getWorkoutSessionsUseCase := sessions.NewGetWorkoutSessionsUseCase(routineRepo, workoutSessionRepo)
+	getWorkoutSessionByIDUseCase := sessions.NewGetWorkoutSessionByIDUseCase(workoutSessionRepo, logExerciseSessionRepo)
+	updateWorkoutSessionStatusUseCase := sessions.NewUpdateWorkoutSessionStatusUseCase(workoutSessionRepo)
+	createExerciseLogUseCase := sessions.NewCreateExerciseLogUseCase(workoutSessionRepo, logExerciseSessionRepo, routineDetailRepo)
+	updateExerciseLogUseCase := sessions.NewUpdateExerciseLogUseCase(logExerciseSessionRepo)
+	deleteExerciseLogUseCase := sessions.NewDeleteExerciseLogUseCase(logExerciseSessionRepo)
+	generateDailySessionsUseCase := sessions.NewGenerateDailySessionsUseCase(routineRepo, workoutSessionRepo)
 
 	// Handlers
 	authHandler := handler.NewAuthHandler(
@@ -165,8 +177,23 @@ func main() {
 		deleteProgressPhotoUseCase,
 	)
 
+	workoutSessionHandler := handler.NewWorkoutSessionHandler(
+		getWorkoutSessionsUseCase,
+		getWorkoutSessionByIDUseCase,
+		updateWorkoutSessionStatusUseCase,
+		createExerciseLogUseCase,
+		updateExerciseLogUseCase,
+		deleteExerciseLogUseCase,
+		generateDailySessionsUseCase,
+	)
+
+	// Cron
+	dailySessionsCron := cronAdapter.NewDailySessionsCron(generateDailySessionsUseCase)
+	dailySessionsCron.Start()
+	defer dailySessionsCron.Stop()
+
 	// Router
-	router := httpAdapter.NewRouter(authHandler, exerciseHandler, customerHandler, templateHandler, routineHandler, progressHandler, jwtProvider)
+	router := httpAdapter.NewRouter(authHandler, exerciseHandler, customerHandler, templateHandler, routineHandler, progressHandler, workoutSessionHandler, jwtProvider)
 
 	addr := fmt.Sprintf(":%s", cfg.Port)
 	logger.Info.Printf("Server starting on %s (env: %s)", addr, cfg.Env)
