@@ -53,6 +53,16 @@ func main() {
 
 	// Adapters
 	passwordHasher := authAdapter.NewBcryptPasswordHasher()
+
+	// Seed database with trainer user if not exists
+	if err := postgres.Seed(db, passwordHasher, postgres.SeedConfig{
+		TrainerName:     cfg.SeedTrainerName,
+		TrainerEmail:    cfg.SeedTrainerEmail,
+		TrainerPassword: cfg.SeedTrainerPassword,
+	}); err != nil {
+		log.Fatalf("Failed to seed database: %v", err)
+	}
+
 	jwtProvider := authAdapter.NewJWTProvider(cfg.JWTSecret, cfg.JWTAccessExpiryMin, cfg.JWTRefreshExpiryDay)
 	otpService := authAdapter.NewConsoleOTPService()
 	fileStorage := storage.NewLocalFileStorage("./uploads", "/uploads")

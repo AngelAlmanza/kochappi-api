@@ -16,6 +16,9 @@ type Config struct {
 	Env                 string
 	LogLevel            string
 	OTPExpiryMinutes    int
+	SeedTrainerName     string
+	SeedTrainerEmail    string
+	SeedTrainerPassword string
 }
 
 func Load() *Config {
@@ -30,6 +33,9 @@ func Load() *Config {
 		Env:                 getEnv("ENV", "development"),
 		LogLevel:            getEnv("LOG_LEVEL", "debug"),
 		OTPExpiryMinutes:    getEnvAsInt("OTP_EXPIRY_MINUTES", 10),
+		SeedTrainerName:     getEnv("SEED_TRAINER_NAME", "Admin Trainer"),
+		SeedTrainerEmail:    getEnv("SEED_TRAINER_EMAIL", "trainer@kochappi.com"),
+		SeedTrainerPassword: getEnv("SEED_TRAINER_PASSWORD", "ChangeMe123!"),
 	}
 }
 
