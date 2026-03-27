@@ -11,6 +11,7 @@ import (
 // Users and auth
 
 type UserRepository interface {
+	GetAll(ctx context.Context, role *entity.Role) ([]entity.User, error)
 	Create(ctx context.Context, user *entity.User) error
 	GetByID(ctx context.Context, id int) (*entity.User, error)
 	GetByEmail(ctx context.Context, email string) (*entity.User, error)

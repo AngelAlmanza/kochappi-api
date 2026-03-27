@@ -96,6 +96,9 @@ kochappi-api/
 
 ## 📚 Documentación
 
+### Swagger
+Accede a la documentación de la API en [`http://localhost:8081/swagger/index.html`](http://localhost:8081/swagger/index.html)
+
 ### Producto
 Accede a la documentación del producto en [`docs/PRD/`](docs/PRD/README.md):
 - **Overview**: Resumen ejecutivo y objetivos

@@ -18,6 +18,7 @@ import (
 	"kochappi/internal/application/service/routines"
 	"kochappi/internal/application/service/sessions"
 	"kochappi/internal/application/service/templates"
+	"kochappi/internal/application/service/users"
 	"kochappi/internal/shared/logger"
 
 	_ "kochappi/docs"
@@ -113,6 +114,11 @@ func main() {
 	removeRoutineDetailUseCase := routines.NewRemoveRoutineDetailUseCase(routineDetailRepo)
 	getRoutinePeriodsUseCase := routines.NewGetRoutinePeriodsUseCase(routineRepo, routinePeriodRepo)
 
+	getUsersUseCase := users.NewGetUsersUseCase(userRepo)
+	getUserByIDUseCase := users.NewGetUserByIDUseCase(userRepo)
+	createUserUseCase := users.NewCreateUserUseCase(userRepo, passwordHasher)
+	updateUserEmailUseCase := users.NewUpdateUserEmailUseCase(userRepo)
+
 	getCustomersUseCase := customers.NewGetCustomersUseCase(customerRepo)
 	getCustomerByIDUseCase := customers.NewGetCustomerByIDUseCase(customerRepo)
 	createCustomerUseCase := customers.NewCreateCustomerUseCase(customerRepo, userRepo)
@@ -135,6 +141,8 @@ func main() {
 	generateDailySessionsUseCase := sessions.NewGenerateDailySessionsUseCase(routineRepo, workoutSessionRepo)
 
 	// Handlers
+	userHandler := handler.NewUserHandler(getUsersUseCase, getUserByIDUseCase, createUserUseCase, updateUserEmailUseCase)
+
 	authHandler := handler.NewAuthHandler(
 		registerUseCase,
 		loginUseCase,
@@ -203,7 +211,7 @@ func main() {
 	defer dailySessionsCron.Stop()
 
 	// Router
-	router := httpAdapter.NewRouter(authHandler, exerciseHandler, customerHandler, templateHandler, routineHandler, progressHandler, workoutSessionHandler, jwtProvider)
+	router := httpAdapter.NewRouter(authHandler, userHandler, exerciseHandler, customerHandler, templateHandler, routineHandler, progressHandler, workoutSessionHandler, jwtProvider)
 
 	addr := fmt.Sprintf(":%s", cfg.Port)
 	logger.Info.Printf("Server starting on %s (env: %s)", addr, cfg.Env)

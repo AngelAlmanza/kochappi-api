@@ -6,10 +6,18 @@ import (
 )
 
 type MockUserRepository struct {
+	GetAllFn     func(ctx context.Context, role *entity.Role) ([]entity.User, error)
 	CreateFn     func(ctx context.Context, user *entity.User) error
 	GetByIDFn    func(ctx context.Context, id int) (*entity.User, error)
 	GetByEmailFn func(ctx context.Context, email string) (*entity.User, error)
 	UpdateFn     func(ctx context.Context, user *entity.User) error
+}
+
+func (r *MockUserRepository) GetAll(ctx context.Context, role *entity.Role) ([]entity.User, error) {
+	if r.GetAllFn != nil {
+		return r.GetAllFn(ctx, role)
+	}
+	return nil, nil
 }
 
 func (r *MockUserRepository) Create(ctx context.Context, user *entity.User) error {

@@ -13,6 +13,22 @@ import (
 	"gorm.io/gorm"
 )
 
+func (r *PostgresUserRepository) GetAll(ctx context.Context, role *entity.Role) ([]entity.User, error) {
+	var models []model.UserModel
+	query := r.db.WithContext(ctx)
+	if role != nil {
+		query = query.Where("role = ?", string(*role))
+	}
+	if err := query.Find(&models).Error; err != nil {
+		return nil, err
+	}
+	users := make([]entity.User, 0, len(models))
+	for _, m := range models {
+		users = append(users, *m.ToDomainEntity())
+	}
+	return users, nil
+}
+
 type PostgresUserRepository struct {
 	db *gorm.DB
 }

@@ -12,6 +12,7 @@ import (
 
 func NewRouter(
 	authHandler *handler.AuthHandler,
+	userHandler *handler.UserHandler,
 	exerciseHandler *handler.ExerciseHandler,
 	customerHandler *handler.CustomerHandler,
 	templateHandler *handler.TemplateHandler,
@@ -45,6 +46,14 @@ func NewRouter(
 		protected.Use(middleware.AuthMiddleware(tokenProvider))
 		{
 			protected.GET("/auth/me", authHandler.Me)
+
+			usersGroup := protected.Group("/users")
+			{
+				usersGroup.GET("", userHandler.GetUsers)
+				usersGroup.GET("/:id", userHandler.GetUserByID)
+				usersGroup.POST("", userHandler.CreateUser)
+				usersGroup.PATCH("/:id/email", userHandler.UpdateUserEmail)
+			}
 
 			customersGroup := protected.Group("/customers")
 			{
