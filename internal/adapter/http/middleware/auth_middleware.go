@@ -49,3 +49,16 @@ func GetRoleFromContext(c *gin.Context) string {
 	role, _ := c.Get(CONTEXT_KEY_ROLE)
 	return role.(string)
 }
+
+func RequireRoles(allowedRoles ...string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		role := GetRoleFromContext(c)
+		for _, r := range allowedRoles {
+			if role == r {
+				c.Next()
+				return
+			}
+		}
+		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "insufficient permissions", "code": "FORBIDDEN"})
+	}
+}

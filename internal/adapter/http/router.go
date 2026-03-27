@@ -4,6 +4,7 @@ import (
 	"kochappi/internal/adapter/http/handler"
 	"kochappi/internal/adapter/http/middleware"
 	"kochappi/internal/application/port"
+	"kochappi/internal/domain/entity"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -47,75 +48,96 @@ func NewRouter(
 		{
 			protected.GET("/auth/me", authHandler.Me)
 
-			usersGroup := protected.Group("/users")
+			trainer := protected.Group("")
+			trainer.Use(middleware.RequireRoles(string(entity.ROLE_TRAINER)))
 			{
-				usersGroup.GET("", userHandler.GetUsers)
-				usersGroup.GET("/:id", userHandler.GetUserByID)
-				usersGroup.POST("", userHandler.CreateUser)
-				usersGroup.PATCH("/:id/email", userHandler.UpdateUserEmail)
+				usersGroup := trainer.Group("/users")
+				{
+					usersGroup.GET("", userHandler.GetUsers)
+					usersGroup.GET("/:id", userHandler.GetUserByID)
+					usersGroup.POST("", userHandler.CreateUser)
+					usersGroup.PATCH("/:id/email", userHandler.UpdateUserEmail)
+				}
+
+				customersGroup := trainer.Group("/customers")
+				{
+					customersGroup.GET("", customerHandler.GetCustomers)
+					customersGroup.GET("/:id", customerHandler.GetCustomerByID)
+					customersGroup.POST("", customerHandler.CreateCustomer)
+					customersGroup.PUT("/:id", customerHandler.UpdateCustomer)
+					customersGroup.DELETE("/:id", customerHandler.DeleteCustomer)
+
+					progressGroup := customersGroup.Group("/:id/log_customer_progress")
+					{
+						progressGroup.GET("", progressHandler.GetProgressLogs)
+						progressGroup.POST("", progressHandler.CreateProgressLog)
+						progressGroup.GET("/:logId", progressHandler.GetProgressLogByID)
+						progressGroup.DELETE("/:logId", progressHandler.DeleteProgressLog)
+						progressGroup.POST("/:logId/photos", progressHandler.UploadProgressPhoto)
+						progressGroup.DELETE("/:logId/photos/:photoId", progressHandler.DeleteProgressPhoto)
+					}
+				}
+
+				templatesGroup := trainer.Group("/templates")
+				{
+					templatesGroup.GET("", templateHandler.GetTemplates)
+					templatesGroup.GET("/:id", templateHandler.GetTemplateByID)
+					templatesGroup.POST("", templateHandler.CreateTemplate)
+					templatesGroup.PUT("/:id", templateHandler.UpdateTemplate)
+					templatesGroup.DELETE("/:id", templateHandler.DeleteTemplate)
+					templatesGroup.POST("/:id/details", templateHandler.AddTemplateDetail)
+					templatesGroup.DELETE("/:id/details/:detailId", templateHandler.RemoveTemplateDetail)
+				}
+
+				routinesGroup := trainer.Group("/routines")
+				{
+					routinesGroup.GET("", routineHandler.GetRoutines)
+					routinesGroup.GET("/:id", routineHandler.GetRoutineByID)
+					routinesGroup.POST("", routineHandler.CreateRoutine)
+					routinesGroup.PUT("/:id", routineHandler.UpdateRoutine)
+					routinesGroup.POST("/:id/activate", routineHandler.ActivateRoutine)
+					routinesGroup.POST("/:id/deactivate", routineHandler.DeactivateRoutine)
+					routinesGroup.POST("/:id/details", routineHandler.AddRoutineDetail)
+					routinesGroup.DELETE("/:id/details/:detailId", routineHandler.RemoveRoutineDetail)
+					routinesGroup.GET("/:id/periods", routineHandler.GetRoutinePeriods)
+				}
+
+				exercisesGroup := trainer.Group("/exercises")
+				{
+					exercisesGroup.POST("", exerciseHandler.CreateExercise)
+					exercisesGroup.PUT("/:id", exerciseHandler.UpdateExercise)
+					exercisesGroup.DELETE("/:id", exerciseHandler.DeleteExercise)
+				}
+
+				trainer.POST("/workout-sessions/generate", workoutSessionHandler.GenerateDailySessions)
 			}
 
-			customersGroup := protected.Group("/customers")
+			both := protected.Group("")
+			both.Use(middleware.RequireRoles(string(entity.ROLE_TRAINER), string(entity.ROLE_CLIENT)))
 			{
-				customersGroup.GET("", customerHandler.GetCustomers)
-				customersGroup.GET("/:id", customerHandler.GetCustomerByID)
-				customersGroup.POST("", customerHandler.CreateCustomer)
-				customersGroup.PUT("/:id", customerHandler.UpdateCustomer)
-				customersGroup.DELETE("/:id", customerHandler.DeleteCustomer)
-
-				progressGroup := customersGroup.Group("/:id/log_customer_progress")
+				exercisesGroup := both.Group("/exercises")
 				{
-					progressGroup.GET("", progressHandler.GetProgressLogs)
-					progressGroup.POST("", progressHandler.CreateProgressLog)
-					progressGroup.GET("/:logId", progressHandler.GetProgressLogByID)
-					progressGroup.DELETE("/:logId", progressHandler.DeleteProgressLog)
-					progressGroup.POST("/:logId/photos", progressHandler.UploadProgressPhoto)
-					progressGroup.DELETE("/:logId/photos/:photoId", progressHandler.DeleteProgressPhoto)
+					exercisesGroup.GET("", exerciseHandler.GetExercises)
+					exercisesGroup.GET("/:id", exerciseHandler.GetExerciseByID)
+				}
+
+				sessionsGroup := both.Group("/workout-sessions")
+				{
+					sessionsGroup.GET("", workoutSessionHandler.GetWorkoutSessions)
+					sessionsGroup.GET("/:id", workoutSessionHandler.GetWorkoutSessionByID)
 				}
 			}
 
-			templatesGroup := protected.Group("/templates")
+			client := protected.Group("")
+			client.Use(middleware.RequireRoles(string(entity.ROLE_CLIENT)))
 			{
-				templatesGroup.GET("", templateHandler.GetTemplates)
-				templatesGroup.GET("/:id", templateHandler.GetTemplateByID)
-				templatesGroup.POST("", templateHandler.CreateTemplate)
-				templatesGroup.PUT("/:id", templateHandler.UpdateTemplate)
-				templatesGroup.DELETE("/:id", templateHandler.DeleteTemplate)
-				templatesGroup.POST("/:id/details", templateHandler.AddTemplateDetail)
-				templatesGroup.DELETE("/:id/details/:detailId", templateHandler.RemoveTemplateDetail)
-			}
-
-			routinesGroup := protected.Group("/routines")
-			{
-				routinesGroup.GET("", routineHandler.GetRoutines)
-				routinesGroup.GET("/:id", routineHandler.GetRoutineByID)
-				routinesGroup.POST("", routineHandler.CreateRoutine)
-				routinesGroup.PUT("/:id", routineHandler.UpdateRoutine)
-				routinesGroup.POST("/:id/activate", routineHandler.ActivateRoutine)
-				routinesGroup.POST("/:id/deactivate", routineHandler.DeactivateRoutine)
-				routinesGroup.POST("/:id/details", routineHandler.AddRoutineDetail)
-				routinesGroup.DELETE("/:id/details/:detailId", routineHandler.RemoveRoutineDetail)
-				routinesGroup.GET("/:id/periods", routineHandler.GetRoutinePeriods)
-			}
-
-			exercisesGroup := protected.Group("/exercises")
-			{
-				exercisesGroup.GET("", exerciseHandler.GetExercises)
-				exercisesGroup.GET("/:id", exerciseHandler.GetExerciseByID)
-				exercisesGroup.POST("", exerciseHandler.CreateExercise)
-				exercisesGroup.PUT("/:id", exerciseHandler.UpdateExercise)
-				exercisesGroup.DELETE("/:id", exerciseHandler.DeleteExercise)
-			}
-
-			sessionsGroup := protected.Group("/workout-sessions")
-			{
-				sessionsGroup.GET("", workoutSessionHandler.GetWorkoutSessions)
-				sessionsGroup.POST("/generate", workoutSessionHandler.GenerateDailySessions)
-				sessionsGroup.GET("/:id", workoutSessionHandler.GetWorkoutSessionByID)
-				sessionsGroup.PATCH("/:id/status", workoutSessionHandler.UpdateWorkoutSessionStatus)
-				sessionsGroup.POST("/:id/logs", workoutSessionHandler.CreateExerciseLog)
-				sessionsGroup.PUT("/:id/logs/:logId", workoutSessionHandler.UpdateExerciseLog)
-				sessionsGroup.DELETE("/:id/logs/:logId", workoutSessionHandler.DeleteExerciseLog)
+				sessionsGroup := client.Group("/workout-sessions")
+				{
+					sessionsGroup.PATCH("/:id/status", workoutSessionHandler.UpdateWorkoutSessionStatus)
+					sessionsGroup.POST("/:id/logs", workoutSessionHandler.CreateExerciseLog)
+					sessionsGroup.PUT("/:id/logs/:logId", workoutSessionHandler.UpdateExerciseLog)
+					sessionsGroup.DELETE("/:id/logs/:logId", workoutSessionHandler.DeleteExerciseLog)
+				}
 			}
 		}
 	}
