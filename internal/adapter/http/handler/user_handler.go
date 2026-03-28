@@ -8,6 +8,7 @@ import (
 	"kochappi/internal/application/dto"
 	"kochappi/internal/application/service/users"
 	"kochappi/internal/domain/entity"
+	"kochappi/internal/shared/logger"
 
 	"github.com/gin-gonic/gin"
 )
@@ -46,6 +47,7 @@ func NewUserHandler(
 // @Router       /users [get]
 func (h *UserHandler) GetUsers(c *gin.Context) {
 	var role *entity.Role
+
 	if roleStr := c.Query("role"); roleStr != "" {
 		if roleStr != string(entity.ROLE_TRAINER) && roleStr != string(entity.ROLE_CLIENT) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "role must be 'trainer' or 'client'", "code": "VALIDATION_ERROR"})
@@ -55,7 +57,19 @@ func (h *UserHandler) GetUsers(c *gin.Context) {
 		role = &r
 	}
 
-	response, err := h.getUsersUseCase.Execute(c.Request.Context(), role)
+	includeWithCustomers := true
+	if includeWithCustomersStr := c.Query("includeWithCustomers"); includeWithCustomersStr != "" {
+		var err error
+		includeWithCustomers, err = strconv.ParseBool(includeWithCustomersStr)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "includeWithCustomers must be a boolean", "code": "VALIDATION_ERROR"})
+			return
+		}
+	}
+
+	logger.Info.Printf("Getting with params: role=%s, includeWithCustomers=%t", *role, includeWithCustomers)
+
+	response, err := h.getUsersUseCase.Execute(c.Request.Context(), role, includeWithCustomers)
 	if err != nil {
 		middleware.HandleError(c, err)
 		return

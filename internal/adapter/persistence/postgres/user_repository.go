@@ -13,12 +13,17 @@ import (
 	"gorm.io/gorm"
 )
 
-func (r *PostgresUserRepository) GetAll(ctx context.Context, role *entity.Role) ([]entity.User, error) {
+func (r *PostgresUserRepository) GetAll(ctx context.Context, role *entity.Role, includeWithCustomers bool) ([]entity.User, error) {
 	var models []model.UserModel
 	query := r.db.WithContext(ctx)
 	if role != nil {
 		query = query.Where("role = ?", string(*role))
 	}
+
+	if !includeWithCustomers {
+		query = query.Where("id NOT IN (SELECT user_id FROM customers)")
+	}
+
 	if err := query.Find(&models).Error; err != nil {
 		return nil, err
 	}

@@ -16,8 +16,8 @@ func NewGetUsersUseCase(userRepo port.UserRepository) *GetUsersUseCase {
 	return &GetUsersUseCase{userRepo: userRepo}
 }
 
-func (uc *GetUsersUseCase) Execute(ctx context.Context, role *entity.Role) ([]dto.UserDetailResponse, error) {
-	userList, err := uc.userRepo.GetAll(ctx, role)
+func (uc *GetUsersUseCase) Execute(ctx context.Context, role *entity.Role, includeWithCustomers bool) ([]dto.UserDetailResponse, error) {
+	userList, err := uc.userRepo.GetAll(ctx, role, includeWithCustomers)
 	if err != nil {
 		return nil, err
 	}
